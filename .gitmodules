@@ -1,0 +1,6 @@
+[submodule "Recbole"]
+	path = Recbole
+	url = https://github.com/JingyuanHe1222/RecBole.git
+[submodule "RecBole"]
+	path = RecBole
+	url = https://github.com/JingyuanHe1222/RecBole.git
