@@ -1,0 +1,6 @@
+
+[04/09/2025 23:57:19] {inference.py:114} INFO - item len: 495064
+[04/09/2025 23:57:25] {inference.py:116} INFO - test len: 776370
+[04/09/2025 23:57:25] {inference.py:18} INFO - ***** Running testing *****
+[04/10/2025 10:04:50] {inference.py:82} INFO - Test: Recall@1: 0.0071 Recall@10: 0.0215 Recall@50: 0.0352 Recall@100: 0.0444 NDCG@1: 0.0071 NDCG@10: 0.0136 NDCG@50: 0.0166 NDCG@100: 0.0181 
+[04/10/2025 10:04:50] {inference.py:84} INFO - ***** Finish test *****
