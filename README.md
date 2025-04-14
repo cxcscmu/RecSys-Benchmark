@@ -4,13 +4,13 @@ Ressys benchmark code repo
 
 ## Setup 
 
-Clone this project and all submodules: 
+<!-- Clone this project and all submodules: 
 
     git clone --recursive https://github.com/cxcscmu/RecSys-Benchmark.git
 
 Update submodules if needed: 
 
-    git submodule update --recursive --remote
+    git submodule update --recursive --remote -->
 
 
 Install RecBole as per RecBole README: 
