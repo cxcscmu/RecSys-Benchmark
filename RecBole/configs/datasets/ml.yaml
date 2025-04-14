@@ -1,0 +1,24 @@
+# env
+seed: 42
+shuffle: True
+reproducibility: True 
+
+# dataset info
+dataset: 
+data_path: /data/group_data/cx_group/REC/data
+load_col:
+    inter: [user_id, item_id, rating, timestamp]
+    item: ['item_id','movie_title','release_year','genre']
+USER_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+RATING_FIELD: rating
+TIME_FIELD: timestamp
+MAX_ITEM_LIST_LENGTH: 50
+
+# filtering 
+val_interval: ~
+filter_inter_by_user_or_item: True
+user_inter_num_interval: "[20,inf)"
+item_inter_num_interval: "[20,inf)"
+
+

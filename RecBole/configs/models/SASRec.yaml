@@ -1,0 +1,26 @@
+# Env
+checkpoint_dir: /data/group_data/cx_group/REC/checkpoints
+log_wandb: True 
+wandb_project: RecSys-Benchmark 
+show_progress: True
+save_dataset: False
+save_dataloaders: False
+
+# Training 
+epochs: 200
+batch_size: 1024
+learner: adam
+learning_rate: 0.001
+loss_type: CE
+train_neg_sample_args:
+stopping_step: 50 # default 10 for ml, 50 for others 
+
+# Model 
+model: SASRec
+n_heads: 1
+n_layers: 2
+hidden_size: 50 
+inner_size: 50 
+hidden_act: relu
+hidden_dropout_prob: 0.5 # 0.2 for ml, 0.5 for others 
+attn_dropout_prob: 0.5 # 0.2 for ml, 0.5 for others 

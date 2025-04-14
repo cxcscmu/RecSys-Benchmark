@@ -1,0 +1,16 @@
+
+# split 
+eval_args:
+  split: { 'LS': 'valid_and_test' }
+  group_by: user
+  order: TO
+  mode: full
+
+repeatable: True
+metrics: ["Recall","NDCG", "Hit"]
+topk: [1,5,10,20,50,100]
+valid_metric: NDCG@10
+valid_metric_bigger: True
+eval_batch_size: 1024
+loss_decimal_place: 4
+metric_decimal_place: 4
