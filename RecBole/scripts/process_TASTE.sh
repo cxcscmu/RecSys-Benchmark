@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=SASRec_ml1m
+#SBATCH --job-name=process_data_TASTE 
 #SBATCH --output=outputs/%x-%j.out
 #SBATCH --error=outputs/%x-%j.err 
 #SBATCH --partition=general 
@@ -20,6 +20,7 @@
 #SBATCH --mail-user="jingyuah@cs.cmu.edu"
 
 
+
 # enter a config env
 eval "$(conda shell.bash hook)"
 conda activate recsys_ben
@@ -30,7 +31,8 @@ model="SASRec"
 dataset_type="ml"
 dataset="ml-1m"
 
-exp_name="${model}_${dataset}"
+# rewrite taste here, but leave model=SASRec just that Recbole detect a support model 
+exp_name="/data/group_data/cx_group/REC/checkpoints/TASTE_${dataset}"
 
 nproc=2
 
@@ -47,4 +49,4 @@ python run_recbole.py  \
     --exp_name $exp_name \
     --nproc $nproc \
     --config_files "${model_config} ${data_config} ${eval_config}" \
-    --data_preprocess 
+    --data_preprocess
