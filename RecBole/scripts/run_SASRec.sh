@@ -16,9 +16,6 @@
 
 #SBATCH --time=48:00:00
 
-#SBATCH --mail-type=END
-#SBATCH --mail-user="jingyuah@cs.cmu.edu"
-
 
 # enter a config env
 eval "$(conda shell.bash hook)"
@@ -27,14 +24,16 @@ conda activate recsys_ben
 
 # Configs
 model="SASRec"
-dataset_type="ml"
-dataset="ml-1m"
+
+
+dataset_type="ml" # amzn, ml
+dataset="ml-1m" # amzn-beauty, amzn-books, amzn-toys, amzn-sports 
 
 exp_name="${model}_${dataset}"
 
 nproc=2
 
-source_dir="/home/jingyuah/RecSys-Benchmark/RecBole"
+source_dir="RecSys-Benchmark/RecBole"
 
 model_config="${source_dir}/configs/models/${model}.yaml"
 data_config="${source_dir}/configs/datasets/${dataset_type}.yaml"
