@@ -8,7 +8,7 @@ save_dataloaders: False
 
 # Training 
 epochs: 200
-batch_size: 1024
+train_batch_size: 1024
 learner: adam
 learning_rate: 0.001
 loss_type: CE
