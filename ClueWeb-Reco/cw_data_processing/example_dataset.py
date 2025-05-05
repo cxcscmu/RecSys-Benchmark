@@ -47,7 +47,7 @@ def load_data_clueweb(filename, id_map_path, clueweb_path):
 
 
 id_map_path="ClueWeb-Reco/cwid_to_id.tsv"
-seq_data_path="ClueWeb-Reco/valid.tsv"
+seq_data_path="ClueWeb-Reco_public/ordered_id_splits/valid_input.tsv"
 clueweb_path="/data/datasets/clueweb22/ClueWeb22_B"
 
 # dictionary with session_ids as key, list of strings of the titles of historically interacted item
