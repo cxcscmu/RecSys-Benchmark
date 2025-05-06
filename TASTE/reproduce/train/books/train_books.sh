@@ -10,12 +10,15 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
 
-#SBATCH --mem=256G
+#SBATCH --mem=300G
 
-#SBATCH --gres=gpu:8
+#SBATCH --gres=gpu:A6000:8
 #SBATCH --exclude=babel-15-32,babel-9-11
 
 #SBATCH --time=48:00:00
+
+#SBATCH --mail-type=END
+#SBATCH --mail-user="jingyuah@cs.cmu.edu"
 
 
 # enter a config env

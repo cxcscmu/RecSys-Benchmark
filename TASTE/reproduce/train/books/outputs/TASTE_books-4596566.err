@@ -1,0 +1,357 @@
+W0419 14:25:42.450458 23140900557824 torch/distributed/run.py:779] 
+W0419 14:25:42.450458 23140900557824 torch/distributed/run.py:779] *****************************************
+W0419 14:25:42.450458 23140900557824 torch/distributed/run.py:779] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0419 14:25:42.450458 23140900557824 torch/distributed/run.py:779] *****************************************
+04/19/2025 14:25:59 - WARNING - __main__ -   Process rank: 4, device: cuda:4, n_gpu: 1, distributed training: True, 16-bits training: False
+04/19/2025 14:25:59 - WARNING - __main__ -   Process rank: 7, device: cuda:7, n_gpu: 1, distributed training: True, 16-bits training: False
+04/19/2025 14:25:59 - WARNING - __main__ -   Process rank: 2, device: cuda:2, n_gpu: 1, distributed training: True, 16-bits training: False
+04/19/2025 14:25:59 - WARNING - __main__ -   Process rank: 0, device: cuda:0, n_gpu: 1, distributed training: True, 16-bits training: False
+04/19/2025 14:25:59 - WARNING - __main__ -   Process rank: 6, device: cuda:6, n_gpu: 1, distributed training: True, 16-bits training: False
+04/19/2025 14:25:59 - WARNING - __main__ -   Process rank: 1, device: cuda:1, n_gpu: 1, distributed training: True, 16-bits training: False
+04/19/2025 14:25:59 - WARNING - __main__ -   Process rank: 5, device: cuda:5, n_gpu: 1, distributed training: True, 16-bits training: False
+04/19/2025 14:25:59 - INFO - __main__ -   Training/evaluation parameters DRTrainingArguments(
+_n_gpu=1,
+adafactor=False,
+adam_beta1=0.9,
+adam_beta2=0.999,
+adam_epsilon=1e-08,
+auto_find_batch_size=False,
+bf16=False,
+bf16_full_eval=False,
+data_seed=None,
+dataloader_drop_last=False,
+dataloader_num_workers=0,
+dataloader_pin_memory=True,
+ddp_bucket_cap_mb=None,
+ddp_find_unused_parameters=None,
+ddp_timeout=1800,
+debug=[],
+deepspeed=None,
+disable_tqdm=False,
+distil_mode=pairwise,
+distillation=False,
+do_encode=False,
+do_eval=True,
+do_predict=False,
+do_train=True,
+eval_accumulation_steps=None,
+eval_delay=0,
+eval_steps=2500,
+evaluation_strategy=steps,
+fp16=False,
+fp16_backend=auto,
+fp16_full_eval=False,
+fp16_opt_level=O1,
+fsdp=[],
+fsdp_min_num_params=0,
+fsdp_transformer_layer_cls_to_wrap=None,
+full_determinism=False,
+gc_p_chunk_size=32,
+gc_q_chunk_size=4,
+grad_cache=False,
+gradient_accumulation_steps=1,
+gradient_checkpointing=False,
+greater_is_better=False,
+group_by_length=False,
+half_precision_backend=auto,
+hub_model_id=None,
+hub_private_repo=False,
+hub_strategy=every_save,
+hub_token=<HUB_TOKEN>,
+ignore_data_skip=True,
+include_inputs_for_metrics=False,
+jit_mode_eval=False,
+label_names=None,
+label_smoothing_factor=0.0,
+learning_rate=0.0004,
+length_column_name=length,
+load_best_model_at_end=False,
+local_rank=0,
+log_level=-1,
+log_level_replica=-1,
+log_on_each_node=True,
+logging_dir=/data/group_data/cx_group/REC/checkpoints/TASTE_amzn-books/runs/Apr19_14-25-57_shire-1-6,
+logging_first_step=False,
+logging_nan_inf_filter=True,
+logging_steps=100,
+logging_strategy=steps,
+lr_scheduler_type=linear,
+max_grad_norm=1.0,
+max_steps=-1,
+metric_for_best_model=eval_loss,
+mp_parameters=,
+negatives_x_device=False,
+no_cuda=False,
+num_train_epochs=30.0,
+optim=adamw_hf,
+output_dir=/data/group_data/cx_group/REC/checkpoints/TASTE_amzn-books,
+overwrite_output_dir=False,
+past_index=-1,
+per_device_eval_batch_size=48,
+per_device_train_batch_size=48,
+prediction_loss_only=False,
+push_to_hub=False,
+push_to_hub_model_id=None,
+push_to_hub_organization=None,
+push_to_hub_token=<PUSH_TO_HUB_TOKEN>,
+ray_scope=last,
+remove_unused_columns=False,
+report_to=['wandb'],
+resume_from_checkpoint=None,
+run_name=TASTE_amzn-books,
+save_on_each_node=False,
+save_steps=2500,
+save_strategy=steps,
+save_total_limit=2,
+seed=2022,
+sharded_ddp=[],
+skip_memory_metrics=True,
+tf32=None,
+torchdynamo=None,
+tpu_metrics_debug=False,
+tpu_num_cores=None,
+use_ipex=False,
+use_legacy_prediction_loop=False,
+use_mapping_dataset=False,
+use_mps_device=False,
+warmup_ratio=0.1,
+warmup_steps=0,
+weight_decay=0.0,
+xpu_backend=None,
+)
+04/19/2025 14:25:59 - WARNING - __main__ -   Process rank: 3, device: cuda:3, n_gpu: 1, distributed training: True, 16-bits training: False
+04/19/2025 14:25:59 - INFO - __main__ -   MODEL parameters ModelArguments(model_name_or_path='google-t5/t5-base', target_model_path=None, config_name=None, tokenizer_name=None, processor_name=None, cache_dir=None, untie_encoder=False, feature='last_hidden_state', pooling='first', add_linear_head=False, projection_in_dim=768, projection_out_dim=768, dtype='float32', encoder_only=False, pos_token=None, neg_token=None, normalize=False, param_efficient_method=None)
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/huggingface_hub/file_download.py:1150: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/huggingface_hub/file_download.py:1150: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/huggingface_hub/file_download.py:1150: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/huggingface_hub/file_download.py:1150: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/huggingface_hub/file_download.py:1150: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/huggingface_hub/file_download.py:1150: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/huggingface_hub/file_download.py:1150: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/huggingface_hub/file_download.py:1150: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/modeling_utils.py:371: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(checkpoint_file, map_location="cpu")
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/modeling_utils.py:371: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(checkpoint_file, map_location="cpu")
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/modeling_utils.py:371: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(checkpoint_file, map_location="cpu")
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/modeling_utils.py:371: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(checkpoint_file, map_location="cpu")
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/modeling_utils.py:371: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(checkpoint_file, map_location="cpu")
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/modeling_utils.py:371: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(checkpoint_file, map_location="cpu")
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/modeling_utils.py:371: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(checkpoint_file, map_location="cpu")
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/modeling_utils.py:371: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(checkpoint_file, map_location="cpu")
+Loading model from /data/group_data/cx_group/REC/checkpoints/TASTE_amzn-books/checkpoint-47500.
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:1953: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(os.path.join(resume_from_checkpoint, WEIGHTS_NAME), map_location="cpu")
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:1953: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(os.path.join(resume_from_checkpoint, WEIGHTS_NAME), map_location="cpu")
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:1953: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(os.path.join(resume_from_checkpoint, WEIGHTS_NAME), map_location="cpu")
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:1953: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(os.path.join(resume_from_checkpoint, WEIGHTS_NAME), map_location="cpu")
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:1953: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(os.path.join(resume_from_checkpoint, WEIGHTS_NAME), map_location="cpu")
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:1953: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(os.path.join(resume_from_checkpoint, WEIGHTS_NAME), map_location="cpu")
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:1953: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(os.path.join(resume_from_checkpoint, WEIGHTS_NAME), map_location="cpu")
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:1953: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(os.path.join(resume_from_checkpoint, WEIGHTS_NAME), map_location="cpu")
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2283: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  torch.load(os.path.join(checkpoint, OPTIMIZER_NAME), map_location=map_location)
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2283: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  torch.load(os.path.join(checkpoint, OPTIMIZER_NAME), map_location=map_location)
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2283: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  torch.load(os.path.join(checkpoint, OPTIMIZER_NAME), map_location=map_location)
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2283: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  torch.load(os.path.join(checkpoint, OPTIMIZER_NAME), map_location=map_location)
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2283: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  torch.load(os.path.join(checkpoint, OPTIMIZER_NAME), map_location=map_location)
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2283: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  torch.load(os.path.join(checkpoint, OPTIMIZER_NAME), map_location=map_location)
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2283: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  torch.load(os.path.join(checkpoint, OPTIMIZER_NAME), map_location=map_location)
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2283: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  torch.load(os.path.join(checkpoint, OPTIMIZER_NAME), map_location=map_location)
+***** Running training *****
+  Num examples = 7159187
+  Num Epochs = 30
+  Instantaneous batch size per device = 48
+  Total train batch size (w. parallel, distributed & accumulation) = 384
+  Gradient Accumulation steps = 1
+  Total optimization steps = 559320
+  Continuing training from checkpoint, will skip to saved global_step
+  Continuing training from epoch 2
+  Continuing training from global step 47500
+Automatic Weights & Biases logging enabled, to disable set os.environ["WANDB_DISABLED"] = "true"
+wandb: Currently logged in as: jingyuanhe1222. Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.19.9 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.17.6
+wandb: Run data is saved locally in /home/jingyuah/REC_source/TASTE/reproduce/train/books/wandb/run-20250419_145010-h7sw24oj
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run TASTE_amzn-books
+wandb: ⭐️ View project at https://wandb.ai/jingyuanhe1222/RecSys-Benchmark
+wandb: 🚀 View run at https://wandb.ai/jingyuanhe1222/RecSys-Benchmark/runs/h7sw24oj
+  0%|          | 0/559320 [00:00<?, ?it/s]/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2095: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint_rng_state = torch.load(rng_file)
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2095: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint_rng_state = torch.load(rng_file)
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2095: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint_rng_state = torch.load(rng_file)
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2095: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint_rng_state = torch.load(rng_file)
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2095: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint_rng_state = torch.load(rng_file)
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2095: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint_rng_state = torch.load(rng_file)
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2095: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint_rng_state = torch.load(rng_file)
+/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py:2095: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint_rng_state = torch.load(rng_file)
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/home/jingyuah/REC_source/TASTE/train.py", line 141, in <module>
+[rank1]:     main()
+[rank1]:   File "/home/jingyuah/REC_source/TASTE/train.py", line 131, in main
+[rank1]:     trainer.train(resume_from_checkpoint=most_recent_checkpoint)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py", line 1521, in train
+[rank1]:     return inner_training_loop(
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py", line 1763, in _inner_training_loop
+[rank1]:     tr_loss_step = self.training_step(model, inputs)
+[rank1]:   File "/home/jingyuah/OpenMatch/src/openmatch/trainer/dense_trainer.py", line 121, in training_step
+[rank1]:     return super(DRTrainer, self).training_step(*args) / self._dist_loss_scale_factor
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/trainer.py", line 2499, in training_step
+[rank1]:     loss = self.compute_loss(model, inputs)
+[rank1]:   File "/home/jingyuah/OpenMatch/src/openmatch/trainer/dense_trainer.py", line 117, in compute_loss
+[rank1]:     outputs = model(query=query, passage=passage)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/parallel/distributed.py", line 1636, in forward
+[rank1]:     else self._run_ddp_forward(*inputs, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/parallel/distributed.py", line 1454, in _run_ddp_forward
+[rank1]:     return self.module(*inputs, **kwargs)  # type: ignore[index]
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/REC_source/TASTE/src/taste_model.py", line 93, in forward
+[rank1]:     q_hidden, q_reps = self.encode_query(query)
+[rank1]:   File "/home/jingyuah/REC_source/TASTE/src/taste_model.py", line 134, in encode_query
+[rank1]:     return self.encode(qry, self.lm_q, self.head_q)
+[rank1]:   File "/home/jingyuah/REC_source/TASTE/src/taste_model.py", line 122, in encode
+[rank1]:     hidden, reps = model(input_ids, attention_mask)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/REC_source/TASTE/src/model.py", line 68, in forward
+[rank1]:     return self.encode(*input)
+[rank1]:   File "/home/jingyuah/REC_source/TASTE/src/model.py", line 56, in encode
+[rank1]:     output = super().forward(
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/models/t5/modeling_t5.py", line 1405, in forward
+[rank1]:     encoder_outputs = self.encoder(
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/REC_source/TASTE/src/model.py", line 104, in forward
+[rank1]:     outputs = self.encoder(input_ids, attention_mask, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/models/t5/modeling_t5.py", line 1040, in forward
+[rank1]:     layer_outputs = layer_module(
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/REC_source/TASTE/src/model.py", line 149, in forward
+[rank1]:     output = self.module(
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/models/t5/modeling_t5.py", line 673, in forward
+[rank1]:     self_attention_outputs = self.layer[0](
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/models/t5/modeling_t5.py", line 579, in forward
+[rank1]:     attention_output = self.SelfAttention(
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/transformers/models/t5/modeling_t5.py", line 509, in forward
+[rank1]:     scores = torch.matmul(
+[rank1]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 288.00 MiB. GPU 1 has a total capacity of 10.90 GiB of which 159.25 MiB is free. Including non-PyTorch memory, this process has 10.74 GiB memory in use. Of the allocated memory 10.29 GiB is allocated by PyTorch, and 243.27 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+W0419 14:52:26.873995 23140900557824 torch/distributed/elastic/multiprocessing/api.py:858] Sending process 2561698 closing signal SIGTERM
+W0419 14:52:26.874835 23140900557824 torch/distributed/elastic/multiprocessing/api.py:858] Sending process 2561700 closing signal SIGTERM
+W0419 14:52:26.875042 23140900557824 torch/distributed/elastic/multiprocessing/api.py:858] Sending process 2561701 closing signal SIGTERM
+W0419 14:52:26.875252 23140900557824 torch/distributed/elastic/multiprocessing/api.py:858] Sending process 2561702 closing signal SIGTERM
+W0419 14:52:26.875435 23140900557824 torch/distributed/elastic/multiprocessing/api.py:858] Sending process 2561703 closing signal SIGTERM
+W0419 14:52:26.875616 23140900557824 torch/distributed/elastic/multiprocessing/api.py:858] Sending process 2561704 closing signal SIGTERM
+W0419 14:52:26.875801 23140900557824 torch/distributed/elastic/multiprocessing/api.py:858] Sending process 2561705 closing signal SIGTERM
+E0419 14:52:28.124063 23140900557824 torch/distributed/elastic/multiprocessing/api.py:833] failed (exitcode: 1) local_rank: 1 (pid: 2561699) of binary: /home/jingyuah/miniconda3/envs/taste/bin/python
+Traceback (most recent call last):
+  File "/home/jingyuah/miniconda3/envs/taste/bin/torchrun", line 8, in <module>
+    sys.exit(main())
+  File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 348, in wrapper
+    return f(*args, **kwargs)
+  File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/distributed/run.py", line 901, in main
+    run(args)
+  File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/distributed/run.py", line 892, in run
+    elastic_launch(
+  File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/distributed/launcher/api.py", line 133, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/home/jingyuah/miniconda3/envs/taste/lib/python3.8/site-packages/torch/distributed/launcher/api.py", line 264, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+/home/jingyuah/REC_source/TASTE/train.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2025-04-19_14:52:26
+  host      : shire-1-6.ib
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 2561699)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

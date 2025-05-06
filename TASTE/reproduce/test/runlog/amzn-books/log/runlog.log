@@ -1,6 +1,23 @@
-
 [04/09/2025 23:57:19] {inference.py:114} INFO - item len: 495064
 [04/09/2025 23:57:25] {inference.py:116} INFO - test len: 776370
-[04/09/2025 23:57:25] {inference.py:18} INFO - ***** Running testing *****
+[04/09/2025 23:57:25] {inference.py:18} INFO - ***** Running testing ***** checkpoint 30000
 [04/10/2025 10:04:50] {inference.py:82} INFO - Test: Recall@1: 0.0071 Recall@10: 0.0215 Recall@50: 0.0352 Recall@100: 0.0444 NDCG@1: 0.0071 NDCG@10: 0.0136 NDCG@50: 0.0166 NDCG@100: 0.0181 
 [04/10/2025 10:04:50] {inference.py:84} INFO - ***** Finish test *****
+
+[04/18/2025 19:41:08] {inference.py:114} INFO - item len: 495064
+[04/18/2025 19:41:13] {inference.py:116} INFO - test len: 776370
+[04/18/2025 19:41:13] {inference.py:18} INFO - ***** Running testing ***** checkpoint 35000
+[04/19/2025 01:00:29] {inference.py:82} INFO - Test: Recall@1: 0.0069 Recall@10: 0.0214 Recall@50: 0.0355 Recall@100: 0.0448 NDCG@1: 0.0069 NDCG@10: 0.0135 NDCG@50: 0.0166 NDCG@100: 0.0181 
+[04/19/2025 01:00:29] {inference.py:84} INFO - ***** Finish test *****
+
+[04/24/2025 08:53:31] {inference.py:114} INFO - item len: 495063
+[04/24/2025 08:53:36] {inference.py:116} INFO - test len: 776370
+[04/24/2025 08:53:36] {inference.py:18} INFO - ***** Running testing ***** checkpoint 55000 
+[04/24/2025 14:50:23] {inference.py:82} INFO - Test: Recall@1: 0.0087 Recall@10: 0.0668 Recall@50: 0.1366 Recall@100: 0.1753 NDCG@1: 0.0087 NDCG@10: 0.0337 NDCG@50: 0.049 NDCG@100: 0.0553 
+[04/24/2025 14:50:23] {inference.py:84} INFO - ***** Finish test *****
+
+[04/26/2025 13:57:50] {inference.py:114} INFO - item len: 495063
+[04/26/2025 13:57:55] {inference.py:116} INFO - test len: 776370
+[04/26/2025 13:57:55] {inference.py:18} INFO - ***** Running testing ***** checkpoint 72500 
+[04/26/2025 19:14:21] {inference.py:82} INFO - Test: Recall@1: 0.0098 Recall@10: 0.0763 Recall@50: 0.1534 Recall@100: 0.1959 NDCG@1: 0.0098 NDCG@10: 0.0386 NDCG@50: 0.0555 NDCG@100: 0.0623 
+[04/26/2025 19:14:21] {inference.py:84} INFO - ***** Finish test *****

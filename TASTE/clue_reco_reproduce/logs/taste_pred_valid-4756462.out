@@ -1,0 +1,92 @@
+Starts
+Reading bin file /data/group_data/cx_group/REC/ClueWeb-Reco/TASTE_exps/clueweb22b_TASTE-checkpoint-72500/seq_embed.bin ...
+#pts in part = 1024, #dims = 768, size = 3145728B
+Finished reading part of the bin file.
+Finished converting part data to float.
+Reading bin file /data/group_data/cx_group/REC/ClueWeb-Reco/TASTE_exps/clueweb22b_TASTE-checkpoint-72500/item_embed.bin ...
+#pts = 87208655, #dims = 768
+Number of parts: 9
+Reading bin file /data/group_data/cx_group/REC/ClueWeb-Reco/TASTE_exps/clueweb22b_TASTE-checkpoint-72500/item_embed.bin ...
+#pts in part = 10000000, #dims = 768, size = 30720000000B
+Finished reading part of the bin file.
+Finished converting part data to float.
+Going to compute 1000 NNs for 1024 queries over 10000000 points in 768 dimensions using MIPS distance fn. 
+Computed distances for queries: [0,512)
+Computed exact k-NN for queries: [0,512)
+Computed distances for queries: [512,1024)
+Computed exact k-NN for queries: [512,1024)
+Reading bin file /data/group_data/cx_group/REC/ClueWeb-Reco/TASTE_exps/clueweb22b_TASTE-checkpoint-72500/item_embed.bin ...
+#pts in part = 10000000, #dims = 768, size = 30720000000B
+Finished reading part of the bin file.
+Finished converting part data to float.
+Going to compute 1000 NNs for 1024 queries over 10000000 points in 768 dimensions using MIPS distance fn. 
+Computed distances for queries: [0,512)
+Computed exact k-NN for queries: [0,512)
+Computed distances for queries: [512,1024)
+Computed exact k-NN for queries: [512,1024)
+Reading bin file /data/group_data/cx_group/REC/ClueWeb-Reco/TASTE_exps/clueweb22b_TASTE-checkpoint-72500/item_embed.bin ...
+#pts in part = 10000000, #dims = 768, size = 30720000000B
+Finished reading part of the bin file.
+Finished converting part data to float.
+Going to compute 1000 NNs for 1024 queries over 10000000 points in 768 dimensions using MIPS distance fn. 
+Computed distances for queries: [0,512)
+Computed exact k-NN for queries: [0,512)
+Computed distances for queries: [512,1024)
+Computed exact k-NN for queries: [512,1024)
+Reading bin file /data/group_data/cx_group/REC/ClueWeb-Reco/TASTE_exps/clueweb22b_TASTE-checkpoint-72500/item_embed.bin ...
+#pts in part = 10000000, #dims = 768, size = 30720000000B
+Finished reading part of the bin file.
+Finished converting part data to float.
+Going to compute 1000 NNs for 1024 queries over 10000000 points in 768 dimensions using MIPS distance fn. 
+Computed distances for queries: [0,512)
+Computed exact k-NN for queries: [0,512)
+Computed distances for queries: [512,1024)
+Computed exact k-NN for queries: [512,1024)
+Reading bin file /data/group_data/cx_group/REC/ClueWeb-Reco/TASTE_exps/clueweb22b_TASTE-checkpoint-72500/item_embed.bin ...
+#pts in part = 10000000, #dims = 768, size = 30720000000B
+Finished reading part of the bin file.
+Finished converting part data to float.
+Going to compute 1000 NNs for 1024 queries over 10000000 points in 768 dimensions using MIPS distance fn. 
+Computed distances for queries: [0,512)
+Computed exact k-NN for queries: [0,512)
+Computed distances for queries: [512,1024)
+Computed exact k-NN for queries: [512,1024)
+Reading bin file /data/group_data/cx_group/REC/ClueWeb-Reco/TASTE_exps/clueweb22b_TASTE-checkpoint-72500/item_embed.bin ...
+#pts in part = 10000000, #dims = 768, size = 30720000000B
+Finished reading part of the bin file.
+Finished converting part data to float.
+Going to compute 1000 NNs for 1024 queries over 10000000 points in 768 dimensions using MIPS distance fn. 
+Computed distances for queries: [0,512)
+Computed exact k-NN for queries: [0,512)
+Computed distances for queries: [512,1024)
+Computed exact k-NN for queries: [512,1024)
+Reading bin file /data/group_data/cx_group/REC/ClueWeb-Reco/TASTE_exps/clueweb22b_TASTE-checkpoint-72500/item_embed.bin ...
+#pts in part = 10000000, #dims = 768, size = 30720000000B
+Finished reading part of the bin file.
+Finished converting part data to float.
+Going to compute 1000 NNs for 1024 queries over 10000000 points in 768 dimensions using MIPS distance fn. 
+Computed distances for queries: [0,512)
+Computed exact k-NN for queries: [0,512)
+Computed distances for queries: [512,1024)
+Computed exact k-NN for queries: [512,1024)
+Reading bin file /data/group_data/cx_group/REC/ClueWeb-Reco/TASTE_exps/clueweb22b_TASTE-checkpoint-72500/item_embed.bin ...
+#pts in part = 10000000, #dims = 768, size = 30720000000B
+Finished reading part of the bin file.
+Finished converting part data to float.
+Going to compute 1000 NNs for 1024 queries over 10000000 points in 768 dimensions using MIPS distance fn. 
+Computed distances for queries: [0,512)
+Computed exact k-NN for queries: [0,512)
+Computed distances for queries: [512,1024)
+Computed exact k-NN for queries: [512,1024)
+Reading bin file /data/group_data/cx_group/REC/ClueWeb-Reco/TASTE_exps/clueweb22b_TASTE-checkpoint-72500/item_embed.bin ...
+#pts in part = 7208655, #dims = 768, size = 22144988160B
+Finished reading part of the bin file.
+Finished converting part data to float.
+Going to compute 1000 NNs for 1024 queries over 7208655 points in 768 dimensions using MIPS distance fn. 
+Computed distances for queries: [0,512)
+Computed exact k-NN for queries: [0,512)
+Computed distances for queries: [512,1024)
+Computed exact k-NN for queries: [512,1024)
+Saving truthset in one file (npts, dim, npts*dim id-matrix, npts*dim dist-matrix) with npts = 1024, dim = 1000, size = 8192008B
+Finished writing truthset
+Ends

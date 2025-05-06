@@ -1,5 +1,11 @@
+[03/27/2025 14:15:34] {inference.py:87} INFO - item len: 156235
+[03/27/2025 14:15:37] {inference.py:89} INFO - test len: 409772
+[03/27/2025 14:15:37] {inference.py:18} INFO - ***** Running testing *****
+[03/27/2025 16:07:47] {inference.py:55} INFO - Test: Recall@1: 0.0038 Recall@10: 0.0276 Recall@50: 0.0701 Recall@100: 0.0999 NDCG@1: 0.0038 NDCG@10: 0.0138 NDCG@50: 0.023 NDCG@100: 0.0278 
+[03/27/2025 16:07:47] {inference.py:57} INFO - ***** Finish test *****
+
 [03/31/2025 11:17:18] {inference.py:87} INFO - item len: 156235
 [03/31/2025 11:17:22] {inference.py:89} INFO - test len: 409772
-[03/31/2025 11:17:22] {inference.py:18} INFO - ***** Running testing *****
+[03/31/2025 11:17:22] {inference.py:18} INFO - ***** Running testing ***** checkpoint 37500
 [03/31/2025 12:42:43] {inference.py:55} INFO - Test: Recall@1: 0.0053 Recall@10: 0.0359 Recall@50: 0.087 Recall@100: 0.1214 NDCG@1: 0.0053 NDCG@10: 0.0183 NDCG@50: 0.0293 NDCG@100: 0.0349 
 [03/31/2025 12:42:43] {inference.py:57} INFO - ***** Finish test *****

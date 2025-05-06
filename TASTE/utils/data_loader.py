@@ -1,6 +1,9 @@
+import os
+from tqdm import tqdm 
+
 import torch
 from torch.utils.data import Dataset
-
+from .ClueWeb22Api import ClueWeb22Api, create_shards
 
 class SequenceDataset(Dataset):
     def __init__(self,data,tokenizer,args):
@@ -101,6 +104,64 @@ class ItemDataset(Dataset):
         }
 
 
+
+class ItemDataset_ClueWeb22(Dataset):
+
+    def __init__(self, args, tokenizer):
+        self.tokenizer = tokenizer
+        self.args = args
+
+        self.dataset_dir = "/data/datasets/clueweb22/ClueWeb22_B"
+
+        # get the cwid - id map 
+        self.id_to_cwid = {}
+        self.encode_data = []
+        with open(args.id_map_path, "r") as f:
+            for line in f:  
+                parts = line.strip().split("\t")
+                self.id_to_cwid[int(parts[1])] = parts[0]
+                # the encode data is the internal ids 
+                self.encode_data.append(int(parts[1]))
+   
+        if self.args.dataset_number_of_shards > 1:
+            self.encode_data = create_shards(
+                data=self.encode_data, 
+                num_shards=self.args.dataset_number_of_shards, 
+                index=self.args.dataset_shard_index
+            )
+        print(f"EncodeDataset_ClueWeb22 shard {self.args.dataset_shard_index} length: {len(self.encode_data)}")
+
+    def __len__(self):
+        return len(self.encode_data)
+
+
+    def __getitem__(self, item):
+
+        # document processing 
+        id_ = self.encode_data[item]
+        # retrive clueweb content 
+        cweb_doc_id = self.id_to_cwid[id_]
+        clueweb_api = ClueWeb22Api(cweb_doc_id, self.dataset_dir)
+        clean_txt = eval(clueweb_api.get_clean_text())
+        content = clean_txt["Clean-Text"]
+        title = content.split('\n')[0].replace("\n", "").replace("\t", "").replace("\r", "").replace("\'", "").replace("\"", "").strip()
+        return id_, title 
+
+
+    def collect_fn(self, batch):
+        # "'id: 1 title: {title}"
+        
+        ids_ = [item[0] for item in batch]
+        item_reps = [f"id: {item[0]} title: {item[1]}" for item in batch]
+        item_ids, item_masks = encode_batch(item_reps, self.tokenizer, self.args.item_size)
+        return {
+            "ids": ids_,  
+            "item_ids": item_ids,
+            "item_masks": item_masks,
+        }
+ 
+
+
 def list_split(array,n):
     split_list = []
     s1 = array[:n]
@@ -173,7 +234,48 @@ def load_item_address(filename):
 
 
 
+def get_clueweb_title(cwid, clueweb_path): 
+    clueweb_api = ClueWeb22Api(cwid, clueweb_path)
+    clean_txt = eval(clueweb_api.get_clean_text())
+    content = clean_txt["Clean-Text"]
+    title = content.split('\n')[0].replace("\n", "").replace("\t", "").replace("\r", "").replace("\'", "").replace("\"", "").strip()
+    return title     
 
+
+def load_data_clueweb(filename, id_map_path, clueweb_path): 
+
+    id_to_cwid = {}
+    # load mapping to official clueweb doc 
+    with open(id_map_path, "r") as f:
+        for line in f:  
+            parts = line.strip().split("\t")
+            id_to_cwid[int(parts[1])] = parts[0]
+
+    data = []
+    lines = open(filename, 'r').readlines()
+    for line in tqdm(lines[1:]):
+        example = list() 
+        line = line.strip().split('\t')
+        target = 0 # mask target 
+        # manually keep the 50 history length here at TASTE
+        history = line[1].split(",")
+        seq_id = history[-50:]
+        text_list = []
+        # for each record 
+        for id_ in seq_id:
+            id_ = int(id_)
+            # TASTE use title only 
+            title = get_clueweb_title(id_to_cwid[id_], clueweb_path)
+            # manually assemble reps
+            text_rep = f"id: {id_} title: {title}"
+            text_list.append(text_rep)
+        text_list.reverse()
+        seq_text = ', '.join(text_list)
+        example.append(seq_text)
+        example.append(target)
+        data.append(example)
+
+    return data
 
 
 def load_data(filename,item_desc):

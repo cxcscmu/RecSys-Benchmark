@@ -1,5 +1,23 @@
 [03/09/2025 18:31:00] {inference.py:87} INFO - item len: 356
 [03/09/2025 18:31:00] {inference.py:89} INFO - test len: 253
-[03/09/2025 18:31:00] {inference.py:18} INFO - ***** Running testing *****
+[03/09/2025 18:31:00] {inference.py:18} INFO - ***** Running testing ***** lr = 7e-4
 [03/09/2025 18:31:02] {inference.py:55} INFO - Test: Recall@1: 0.004 Recall@10: 0.0237 Recall@50: 0.1581 Recall@100: 0.2767 NDCG@1: 0.004 NDCG@10: 0.0122 NDCG@50: 0.0401 NDCG@100: 0.0594 
 [03/09/2025 18:31:02] {inference.py:57} INFO - ***** Finish test *****
+
+[04/02/2025 10:39:59] {inference.py:87} INFO - item len: 356
+[04/02/2025 10:39:59] {inference.py:89} INFO - test len: 253
+[04/02/2025 10:39:59] {inference.py:18} INFO - ***** Running testing ***** lr = 2e-4
+[04/02/2025 10:40:01] {inference.py:55} INFO - Test: Recall@1: 0.004 Recall@10: 0.0158 Recall@50: 0.1344 Recall@100: 0.2846 NDCG@1: 0.004 NDCG@10: 0.008 NDCG@50: 0.0327 NDCG@100: 0.0566 
+[04/02/2025 10:40:01] {inference.py:57} INFO - ***** Finish test *****
+
+[04/02/2025 11:13:57] {inference.py:87} INFO - item len: 356
+[04/02/2025 11:13:57] {inference.py:89} INFO - test len: 253
+[04/02/2025 11:13:57] {inference.py:18} INFO - ***** Running testing ***** lr = 3e-4
+[04/02/2025 11:14:00] {inference.py:55} INFO - Test: Recall@1: 0.0 Recall@10: 0.0198 Recall@50: 0.1304 Recall@100: 0.2648 NDCG@1: 0.0 NDCG@10: 0.0071 NDCG@50: 0.0311 NDCG@100: 0.0527 
+[04/02/2025 11:14:00] {inference.py:57} INFO - ***** Finish test *****
+
+[04/09/2025 23:56:13] {inference.py:114} INFO - item len: 356
+[04/09/2025 23:56:13] {inference.py:116} INFO - test len: 253
+[04/09/2025 23:56:13] {inference.py:18} INFO - ***** Running testing *****
+[04/09/2025 23:56:16] {inference.py:82} INFO - Test: Recall@1: 0.0 Recall@10: 0.0198 Recall@50: 0.1304 Recall@100: 0.2648 NDCG@1: 0.0 NDCG@10: 0.0071 NDCG@50: 0.0311 NDCG@100: 0.0527 
+[04/09/2025 23:56:16] {inference.py:84} INFO - ***** Finish test *****

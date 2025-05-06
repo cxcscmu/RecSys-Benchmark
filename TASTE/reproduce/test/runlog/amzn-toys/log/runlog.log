@@ -1,5 +1,5 @@
 [03/23/2025 12:34:01] {inference.py:87} INFO - item len: 162035
-[03/23/2025 12:34:03] {inference.py:89} INFO - test len: 432264
-[03/23/2025 12:34:03] {inference.py:18} INFO - ***** Running testing *****
+[03/23/2025 12:34:03] {inference.py:89} INFO - test len: 432264 
+[03/23/2025 12:34:03] {inference.py:18} INFO - ***** Running testing ***** checkpoint 55000
 [03/23/2025 14:13:45] {inference.py:55} INFO - Test: Recall@1: 0.0059 Recall@10: 0.0515 Recall@50: 0.1126 Recall@100: 0.1479 NDCG@1: 0.0059 NDCG@10: 0.0254 NDCG@50: 0.0387 NDCG@100: 0.0444 
 [03/23/2025 14:13:45] {inference.py:57} INFO - ***** Finish test *****
