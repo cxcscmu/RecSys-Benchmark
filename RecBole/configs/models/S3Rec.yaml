@@ -1,0 +1,34 @@
+# Env
+checkpoint_dir: /data/group_data/cx_group/REC/checkpoints
+log_wandb: True 
+wandb_project: RecSys-Benchmark 
+show_progress: True
+save_dataset: False
+save_dataloaders: False
+
+# Training 
+worker: 0
+train_stage: pretrain
+epochs: 100
+pretrain_epochs: 100
+train_batch_size: 65536
+learner: adam
+learning_rate: 0.001 
+loss_type: CE
+train_neg_sample_args:
+stopping_step: 50 # default 10 for ml, 50 for others 
+save_step: 10
+item_attribute: categories
+
+# Model
+#pre_model_path: /data/group_data/cx_group/REC/checkpoints/s3rec_amzn-sports/S3Rec-amzn-sports-1.pth
+model: S3Rec
+n_heads: 2 
+n_layers: 2 
+hidden_size: 64
+inner_size: 64
+hidden_act: gelu
+hidden_dropout_prob: 0.5 # 0.2 for ml, 0.5 for others 
+attn_dropout_prob: 0.5 # 0.2 for ml, 0.5 for others 
+aap_weight: 1.0
+mip_weight: 0.2
