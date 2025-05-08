@@ -1,0 +1,35 @@
+log_wandb: True
+n_layers: 2
+n_heads: 4
+hidden_size: 256
+inner_size: 256
+hidden_dropout_prob: 0.1
+attn_dropout_prob: 0.1
+hidden_act: gelu
+mask_ratio: 0.15
+intermediate_size: 256
+num_attention_heads: 2
+num_hidden_layers: 2
+
+epochs: 200
+
+embedding_size: 50
+max_seq_length: 50
+#loss_type: "BPR"
+loss_type: "CE"
+train_neg_sample_args:
+optimizer: Adam
+learning_rate: 0.001
+reg_weight: [0.01, 0.01]
+weight_decay: 0.0
+MAX_ITEM_LIST_LENGTH: 50 
+train_seq_len: 5
+target_seq_len: 3
+metrics: ['Recall', 'NDCG']
+topk: [1, 10, 50, 100]
+valid_metric: 'NDCG@10'
+eval_args:
+  split: {'RS': [0.8, 0.1, 0.1]}
+  mode: 'full'
+  group_by_user: True
+  order: 'TO'
