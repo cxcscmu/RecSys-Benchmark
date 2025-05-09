@@ -1,7 +1,15 @@
 # env
 seed: 42
 shuffle: True
-reproducibility: True  # NOTE: can set to False to accelrate for CNN models like Caser
+reproducibility: True
+# NOTE: reproducibility can set to False to accelerate for CNN models like 
+# Caser. It has no significant effect on the performance of the model, but 
+# sacrifices the reproducibility of the results. We set it to False in the 
+# following experiment: 
+# - Caser_amzn-books
+# - Caser_amzn-toys
+# - Caser_amzn-beauty
+# - Caser_amzn-sports
 
 # dataset info
 dataset: 
