@@ -1,0 +1,22 @@
+# Env
+checkpoint_dir: /data/group_data/cx_group/REC/checkpoints
+log_wandb: True 
+wandb_project: RecSys-Benchmark 
+show_progress: True
+save_dataset: False
+save_dataloaders: False
+
+# Training 
+epochs: 100
+train_batch_size: 32768
+eval_batch_size: 32768
+learner: adam
+learning_rate: 0.01
+stopping_step: 50 # default 10 for ml, 50 for others 
+
+# Model 
+model: DeepFM
+
+# label
+threshold:
+  rating: 3
