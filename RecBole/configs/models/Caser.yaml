@@ -1,0 +1,25 @@
+# Env
+checkpoint_dir: /data/group_data/cx_group/REC/checkpoints
+log_wandb: True 
+wandb_project: RecSys-Benchmark 
+show_progress: True
+save_dataset: False
+save_dataloaders: False
+
+# Training 
+epochs: 500
+train_batch_size: 4096
+eval_batch_size: 4096
+learner: adam
+learning_rate: 0.001
+train_neg_sample_args: null
+eval_step: 1
+stopping_step: 50 # default 10 for ml, 50 for others 
+
+# Model 
+model: Caser
+embedding_size: 64
+nv: 8
+nh: 8
+reg_weight: 1e-4
+dropout_prob: 0.5
