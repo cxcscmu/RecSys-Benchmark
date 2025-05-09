@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=DeepFM_amzn-books_32768
+#SBATCH --job-name=DeepFM_ml-1m
 #SBATCH --output=outputs/%x-%j.out
 #SBATCH --error=outputs/%x-%j.err 
 #SBATCH --partition=preempt
