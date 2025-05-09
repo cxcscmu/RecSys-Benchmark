@@ -42,8 +42,7 @@ n_epochs=30
 nproc=8
 
 
-# CUDA_VISIBLE_DEVICES=0,1,2,3 python /home/jingyuah/REC_source/TASTE/train.py  \
-NCCL_P2P_DISABLE=1 torchrun --nproc-per-node=$nproc /home/jingyuah/REC_source/TASTE/train.py  \
+NCCL_P2P_DISABLE=1 torchrun --nproc-per-node=$nproc TASTE/train.py  \
     --output_dir "${checkpoint_dir}/${exp_name}"  \
     --model_name_or_path $model_path  \
     --do_train  \

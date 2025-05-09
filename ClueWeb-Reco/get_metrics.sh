@@ -15,7 +15,8 @@ conda activate recsys_ben
 # get results
 predicted_file=""
 target_path="/data/group_data/cx_group/REC/ClueWeb-Reco/ClueWeb-Reco_public/ordered_id_splits/valid_target.tsv"
-python /home/jingyuah/REC_source/TASTE/get_metrics.py \
+python ClueWeb-Reco/get_metrics.py \
+    --valid \
     --retrieval_result_path $predicted_file \
     --target_path $target_path \
     --Ks "[1, 10, 50, 100]"

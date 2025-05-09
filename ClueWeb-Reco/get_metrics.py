@@ -41,8 +41,7 @@ def get_metrics_dict(rank_indices, n_seq, n_item, Ks, target_item_list, sparse=F
     rank_indices = torch.tensor(rank_indices)
     pos_matrix = torch.zeros([n_seq,n_item], dtype=torch.int)
     for i in range(n_seq):
-        # item id starts from 1
-        pos = target_item_list[i] - 1
+        pos = target_item_list[i]
         pos_matrix[i][pos] = 1
     pos_len_list = pos_matrix.sum(dim=1, keepdim=True)
     pos_idx = torch.gather(pos_matrix, dim=1, index=rank_indices)
@@ -91,7 +90,7 @@ def read_target_file(fname):
     lines = open(fname, 'r').readlines()
     for line in lines[1:]: 
         parts = line.strip().split("\t")
-        target_item_list.append(int(parts[1]) + 1) # the metric calculation assume 1-indexing
+        target_item_list.append(int(parts[1])) 
     return target_item_list
 
 
@@ -100,6 +99,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="Additional parser over encoding")
     parser.add_argument("--valid", action="store_true", help="Whether or not in the validation mode")
+    parser.add_argument("--with_distance", action="store_true", help="Whether or not the binary contains distance file")
     parser.add_argument("--n_item", type=int, default=87208655, help="Number of items in the corpus")
     parser.add_argument("--retrieval_result_path", type=str, help="Path of the DiskANN format binary")
     parser.add_argument("--target_path", type=str, help="Path of the test_target.tsv")
@@ -107,7 +107,7 @@ def main():
     args = parser.parse_args()
 
     # get the retrieved I (ground truth KNNS from DiskANN utility app)
-    I, _ = retrieval_result_read(args.retrieval_result_path)
+    I, _ = retrieval_result_read(args.retrieval_result_path, with_distance=args.with_distance)
     I = I[:, :100]
     I = I.astype(np.int64)
 
