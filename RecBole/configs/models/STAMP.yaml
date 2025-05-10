@@ -1,0 +1,26 @@
+# Env
+checkpoint_dir: /data/group_data/cx_group/REC/checkpoints
+log_wandb: True 
+wandb_project: RecSys-Benchmark 
+show_progress: True
+save_dataset: False
+save_dataloaders: False
+
+# Training 
+epochs: 30
+train_batch_size: 1024
+learner: adam
+learning_rate: 0.002681496909786096
+loss_type: CE
+train_neg_sample_args:
+stopping_step: 5 # default 10 for ml, 50 for others 
+eval_step: 1
+clip_grad_norm:
+  max_norm: 110  # Specify the gradient clipping max norm
+  norm_type: 2   # Optional, defaults to L2 norm
+
+# Model 
+model: STAMP
+embedding_size: 96
+LABEL_FIELD: rating
+
