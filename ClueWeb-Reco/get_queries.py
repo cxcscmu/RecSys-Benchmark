@@ -53,18 +53,18 @@ def generate_prompt(history_titles):
     You are an expert search assistant. A user has visited the following sequence of pages:
     {joined_titles}
     Your task is to infer the user's likely **next intent** based on this browsing history and generate a **concise search query** that represents what they would search for next.
-    👉 Important:
+    Important:
     - Do **not** copy or rephrase the titles.
     - **Infer** what the user is looking for, even if it's not explicitly mentioned.
     - Your output should be **only the final search query**. No bullet points, no explanation, no formatting.
     ---
-    🔹 Example 1:
+    Example 1:
     Browsing history: 
     "iPhone 15 Pro Max review"; "best phone cameras 2024"; "Samsung Galaxy S24 specs"
     Search query:
     flagship phone camera comparison
     ---
-    🔹 Example 2:
+    Example 2:
     Browsing history: 
     "how to brew coffee at home"; "aeropress vs french press"; "best coffee beans for espresso"
     Search query:
@@ -103,7 +103,7 @@ if not api_key:
     raise ValueError("Set your Gemini API key using: export GEMINI_API_KEY='your-key'")
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel("gemini-2.5-flash-preview-04-17")
-print("✅ Gemini client initialized.")
+print("Gemini client initialized.")
 
 def query_gemini(prompt):
     try:
