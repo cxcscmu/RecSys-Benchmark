@@ -1,4 +1,6 @@
-# [ORBIT - Open Recommendation Benchmark for Reproducible Research with Hidden Tests](https://vercel-leaderboard-cyan.vercel.app/). 
+<h1 align="center"> 
+    ORBIT - Open Recommendation Benchmark for Reproducible Research with Hidden Tests
+</h1>
 
 
 <h4 align="center">
