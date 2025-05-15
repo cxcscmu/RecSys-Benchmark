@@ -118,9 +118,11 @@ def main():
     Ks = eval(args.Ks)
 
     batching = True
+    max_ndcg_10 = 0
+    max_ndcg_idx = -1 
     if batching: 
         metrics_dict = None
-        bz = 4
+        bz = 1
         for i in tqdm(range(0, n_seq, bz)): 
             I_batch = I[i:i+bz, :]
             target_item_batch = target_item_list[i:i+bz]
@@ -136,7 +138,15 @@ def main():
                 for k in metrics_dict: 
                     for metric in metrics_dict[k]: 
                         metrics_dict[k][metric] += metrics_dict_batch[k][metric]*n_seq_batch
-    
+                        
+            # if i == 123: 
+            #     breakpoint()
+            if metrics_dict_batch[10]['ndcg'] > max_ndcg_10: 
+                max_ndcg_10 = metrics_dict_batch[10]['ndcg']
+                max_ndcg_idx = i 
+            if metrics_dict_batch[10]['ndcg'] > 0 or metrics_dict_batch[10]['recall'] > 0: 
+                print(f"achieved {metrics_dict_batch[10] } at {i}")
+
         for k in metrics_dict: 
             for metric in metrics_dict[k]: 
                 metrics_dict[k][metric] /= n_seq 
