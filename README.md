@@ -22,6 +22,9 @@
     - [TASTE](#taste)
         - [TASTE Data Processing](#taste-data-processing)
         - [TASTE Experiments](#taste-experiments)
+    - [HLLM](#hllm)
+        - [Environment Setup](#environment-setup)
+        - [Experiments](#experiments)
 - [ClueWeb-Reco Benchmark](#clueweb-reco-benchmark)
     - [Dataset](#clueweb-reco-dataset)
     - [Submission and Evaluation](#clueweb-reco-benchmark-submission-and-evaluation)
@@ -110,6 +113,37 @@ For example, to train and test TASTE on `ml-1m` dataset:
 
 *Note*: Remember to update associated paths in these scripts.  
 
+
+### HLLM
+We follow the HLLM official repository to perform HLLM experiments. Please see the [HLLM official repository](https://github.com/bytedance/HLLM) for more details.
+
+#### Environment Setup
+To avoid package conflicts, create a virtual environment and install dependencies from our adapted requirements.txt:
+```bash
+python -m venv hllm_env
+source hllm_env/bin/activate
+pip install -r requirements.txt
+```
+
+#### Experiments
+We provide scripts to reproduce our experiments across all datasets in the `reproduce/` folder. Our scripts are adapted from the HLLM official repository with additional support for checkpointing, loading, multinode training, and tailored to our datasets.
+
+Run experiments on different datasets using:
+```bash
+# Amazon Toys dataset
+sbatch reproduce/amzn_toys_HLLM.sh
+
+# Amazon Books dataset
+sbatch reproduce/amzn_books_HLLM.sh
+
+#Amazon Sports dataset
+sbatch reproduce/amzn_sports_HLLM.sh
+
+# ML-1M dataset
+sbatch reproduce/ml1m_HLLM.sh
+```
+
+Note: Remember to update dataset paths and model directories in these scripts and in relevant YAML config files if needed before running.
 
 
 <!-- -------------------------- -->

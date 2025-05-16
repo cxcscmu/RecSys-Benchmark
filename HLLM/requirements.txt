@@ -1,0 +1,28 @@
+setuptools==69.5.1
+pandas==2.2.2
+colorama==0.4.6
+torch_geometric==2.5.3
+accelerate==0.30.1
+numpy==1.26.4
+wandb==0.17.7
+colorlog==6.8.2
+torch==2.1.0
+torchvision
+torchaudio
+deepspeed==0.12.6
+lightning==2.4.0
+pytz==2020.5
+PyYAML==6.0.1
+tensorboardX==2.6.2.2
+# tensorflow_cpu==2.8.0
+tqdm==4.66.4
+transformers==4.41.1
+# Flash attention (uncomment and install with --no-build-isolation if needed)
+flash-attn==2.5.9.post1
+xformers
+#fbgemm_gpu==0.5.0
+sentencepiece==0.2.0
+
+# Note: For flash-attn, you may need to run:
+# pip install flash-attn --no-build-isolation
+# FLASH_ATTENTION_SKIP_CUDA_BUILD=TRUE pip install flash-attn==2.5.9.post1

@@ -1,0 +1,51 @@
+# Example for HLLM on Amazon Toys
+# general
+seed: 2020
+state: INFO
+use_text: True
+reproducibility: True
+checkpoint_dir: 'saved'
+show_progress: True
+
+log_wandb: True
+wandb_project: 'HLLM_AmazonToys'
+MAX_ITEM_LIST_LENGTH: 50
+MAX_TEXT_LENGTH: 64
+
+data_path: /data/group_data/cx_group/REC/data/HLLM                       # dataset path
+dataset: amzn-toys                         # dataset name
+timestamp_unit: ms 
+
+text_path: ../information/  # Use absolute path
+text_keys: ['title', 'categories', 'average_rating', 'rating_number', 'price']
+
+item_prompt: 'Compress the following sentence into embedding: '
+item_emb_token_n: 1
+
+loss: nce
+
+# training settings
+epochs: 1
+train_batch_size: 1
+optim_args: {
+  learning_rate: 1e-4,
+  weight_decay: 0.01
+}
+scheduler_args: {
+  type: cosine,
+  warmup: 0.1
+}
+
+# eval settings
+eval_batch_size: 32
+topk: [1,10,50,100]
+metrics: ['Recall', 'NDCG']
+valid_metric: NDCG@100
+metric_decimal_place: 7
+eval_step: 1 
+stopping_step: 5
+skip_last_batch: True
+
+strategy: deepspeed
+precision: bf16-mixed
+stage: 2
