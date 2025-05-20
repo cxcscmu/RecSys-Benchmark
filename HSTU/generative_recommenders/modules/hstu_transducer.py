@@ -80,21 +80,9 @@ class HSTUTransducer(HammerModule):
         self._return_full_embeddings: bool = return_full_embeddings
         self._listwise_training: bool = listwise and self.is_train
 
-        for name, m in self.named_modules():
-            if "_stu_module" in name:
-                continue
-            elif isinstance(m, torch.nn.Linear):
-                torch.nn.init.xavier_normal_(m.weight)
-            elif isinstance(m, torch.nn.LayerNorm):
-                if m.weight.dim() >= 2:
-                    torch.nn.init.xavier_normal_(m.weight)
-                if m.bias is not None and m.bias.dim() >= 2:
-                    torch.nn.init.xavier_normal_(m.bias)
-
     def _preprocess(
         self,
-        max_uih_len: int,
-        max_targets: int,
+        max_seq_len: int,
         seq_lengths: torch.Tensor,
         seq_timestamps: torch.Tensor,
         seq_embeddings: torch.Tensor,
@@ -121,8 +109,7 @@ class HSTUTransducer(HammerModule):
                 output_num_targets,
                 output_seq_payloads,
             ) = self._input_preprocessor(
-                max_uih_len=max_uih_len,
-                max_targets=max_targets,
+                max_seq_len=max_seq_len,
                 seq_lengths=seq_lengths,
                 seq_timestamps=seq_timestamps,
                 seq_embeddings=seq_embeddings,
@@ -206,7 +193,6 @@ class HSTUTransducer(HammerModule):
                 max_seq_len=max_seq_len,
                 offsets_left=uih_offsets,
                 offsets_right=candidates_offsets,
-                kernel=self.hammer_kernel(),
             )
             interleave_targets: bool = self._input_preprocessor.interleave_targets()
             if interleave_targets:
@@ -219,7 +205,6 @@ class HSTUTransducer(HammerModule):
                     max_seq_len=max_seq_len,
                     offsets_left=uih_offsets,
                     offsets_right=candidates_offsets,
-                    kernel=self.hammer_kernel(),
                 )
                 candidate_timestamps = candidate_timestamps.squeeze(-1)
                 if interleave_targets:
@@ -237,8 +222,7 @@ class HSTUTransducer(HammerModule):
 
     def forward(
         self,
-        max_uih_len: int,
-        max_targets: int,
+        max_seq_len: int,
         seq_lengths: torch.Tensor,
         seq_embeddings: torch.Tensor,
         seq_timestamps: torch.Tensor,
@@ -261,8 +245,7 @@ class HSTUTransducer(HammerModule):
             num_targets,
             seq_payloads,
         ) = self._preprocess(
-            max_uih_len=max_uih_len,
-            max_targets=max_targets,
+            max_seq_len=max_seq_len,
             seq_lengths=seq_lengths,
             seq_timestamps=seq_timestamps,
             seq_embeddings=seq_embeddings,
@@ -290,11 +273,9 @@ class HSTUTransducer(HammerModule):
         )
 
         if not self._is_inference:
-            encoded_candidate_embeddings = encoded_candidate_embeddings.to(orig_dtype)
+            encoded_candidate_embeddings.to(orig_dtype)
             if self._return_full_embeddings:
-                encoded_embeddings = fx_unwrap_optional_tensor(encoded_embeddings).to(
-                    orig_dtype
-                )
+                fx_unwrap_optional_tensor(encoded_embeddings).to(orig_dtype)
         return (
             encoded_candidate_embeddings,
             encoded_embeddings,

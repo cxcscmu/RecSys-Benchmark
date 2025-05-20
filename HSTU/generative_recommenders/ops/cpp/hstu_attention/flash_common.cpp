@@ -65,7 +65,6 @@ void set_params_fprop(
     const at::Tensor v,
     void* seq_offsets,
     void* num_targets,
-    void* attn_scale,
     bool causal,
     float alpha,
     const int max_attn_len,
@@ -99,7 +98,6 @@ void set_params_fprop(
 
   params.seq_offsets = static_cast<int*>(seq_offsets);
   params.num_targets = static_cast<int*>(num_targets);
-  params.attn_scale = static_cast<float*>(attn_scale);
 
   // Set the dimensions.
   params.b = b;
@@ -154,7 +152,6 @@ void set_params_dgrad(
     void* dq_accum_d,
     void* seq_offsets,
     void* num_targets,
-    void* attn_scale,
     void* sort_by_length_indices,
     const bool causal,
     const float alpha,
@@ -176,7 +173,6 @@ void set_params_dgrad(
       v,
       seq_offsets,
       num_targets,
-      attn_scale,
       causal,
       alpha,
       max_attn_len,
@@ -322,7 +318,6 @@ at::Tensor hstu_mha_fwd(
     const std::optional<at::Tensor>& seq_offsets,
     bool causal,
     const std::optional<at::Tensor>& num_targets,
-    const std::optional<at::Tensor>& attn_scale,
     int64_t max_attn_len,
     int64_t min_full_attn_seq_len,
     int64_t contextual_seq_len,
@@ -384,16 +379,6 @@ at::Tensor hstu_mha_fwd(
         num_targets_.dtype() == torch::kInt32,
         "num_targets_ must have dtype torch.int32");
   }
-  at::Tensor attn_scale_;
-  bool const has_attn_scale = attn_scale.has_value();
-  if (has_attn_scale) {
-    attn_scale_ = attn_scale.value();
-    CHECK_DEVICE(attn_scale_);
-    TORCH_CHECK(
-        attn_scale_.dtype() == torch::kFloat32,
-        "attn_scale_ must have dtype torch.float32");
-  }
-#ifdef HSTU_FLASH_ATTN_DEBUG_INFO
   if (is_jagged && has_multiple_targets) {
     auto uih_lengths = seq_offsets_.slice(0, 1)
                            .sub(seq_offsets_.slice(0, 0, -1))
@@ -406,10 +391,13 @@ at::Tensor hstu_mha_fwd(
             num_targets_.size(0),
         "some uih seqlen is less than contextual_seq_len");
   }
-#endif
   TORCH_CHECK(
       q.size(-1) == k.size(-1) && k.size(-1) == v.size(-1),
       "only attndim == hidden_dim is supported");
+#ifdef FLASHATTENTION_DISABLE_JAGGED
+  TORCH_CHECK(
+      !is_jagged, "This flash attention build does not support jagged.");
+#endif
 
   auto const sizes = q.sizes();
   const int batch_size = !is_jagged ? sizes[0] : seq_offsets_.size(0) - 1;
@@ -422,10 +410,17 @@ at::Tensor hstu_mha_fwd(
       qk_head_size <= max_headdim && v_head_size <= max_headdim,
       "FlashAttention forward only supports head dimension at most " +
           std::to_string(max_headdim));
-  TORCH_CHECK(max_attn_len >= 0, "max_attn_len must be at least 0");
   TORCH_CHECK(
-      min_full_attn_seq_len >= 0, "min_full_attn_seq_len must be at least 0");
-  TORCH_CHECK(contextual_seq_len >= 0, "contextual_seq_len must be at least 0");
+      max_attn_len < max_seq_len - 1 && max_attn_len >= 0,
+      "max_attn_len must be between 0 and " + std::to_string(max_seq_len - 2));
+  TORCH_CHECK(
+      min_full_attn_seq_len <= max_seq_len && min_full_attn_seq_len >= 0,
+      "min_full_attn_seq_len must be between 0 and " +
+          std::to_string(max_seq_len));
+  TORCH_CHECK(
+      contextual_seq_len <= max_seq_len - 1 && contextual_seq_len >= 0,
+      "contextual_seq_len must be between 0 and " +
+          std::to_string(max_seq_len - 1));
   if (max_attn_len > 0) {
     TORCH_CHECK(
         min_full_attn_seq_len > 0,
@@ -481,7 +476,6 @@ at::Tensor hstu_mha_fwd(
       v,
       !is_jagged ? nullptr : seq_offsets_.data_ptr(),
       !has_multiple_targets ? nullptr : num_targets_.data_ptr(),
-      !has_attn_scale ? nullptr : attn_scale_.data_ptr(),
       causal,
       alpha,
       max_attn_len,
@@ -634,7 +628,6 @@ std::vector<at::Tensor> hstu_mha_bwd(
     const std::optional<at::Tensor>& seq_offsets,
     bool causal,
     const std::optional<at::Tensor>& num_targets,
-    const std::optional<at::Tensor>& attn_scale,
     int64_t max_attn_len,
     int64_t min_full_attn_seq_len,
     int64_t contextual_seq_len,
@@ -710,15 +703,11 @@ std::vector<at::Tensor> hstu_mha_bwd(
         num_targets_.dtype() == torch::kInt32,
         "num_targets_ must have dtype torch.int32");
   }
-  at::Tensor attn_scale_;
-  bool const has_attn_scale = attn_scale.has_value();
-  if (has_attn_scale) {
-    attn_scale_ = attn_scale.value();
-    CHECK_DEVICE(attn_scale_);
-    TORCH_CHECK(
-        attn_scale_.dtype() == torch::kFloat32,
-        "attn_scale_ must have dtype torch.float32");
-  }
+#ifdef FLASHATTENTION_DISABLE_JAGGED
+  TORCH_CHECK(
+      !is_jagged, "This flash attention build does not support jagged.");
+#endif
+
   auto const sizes = q.sizes();
   int const batch_size = !is_jagged ? sizes[0] : seq_offsets_.size(0) - 1;
   if (!is_jagged) {
@@ -736,10 +725,17 @@ std::vector<at::Tensor> hstu_mha_bwd(
       qk_head_size <= max_headdim && v_head_size <= max_headdim,
       "FlashAttention backward only supports head dimension at most " +
           std::to_string(max_headdim));
-  TORCH_CHECK(max_attn_len >= 0, "max_attn_len must be at least 0");
   TORCH_CHECK(
-      min_full_attn_seq_len >= 0, "min_full_attn_seq_len must be at least 0");
-  TORCH_CHECK(contextual_seq_len >= 0, "contextual_seq_len must be at least 0");
+      max_attn_len < max_seq_len - 1 && max_attn_len >= 0,
+      "max_attn_len must be between 0 and " + std::to_string(max_seq_len - 2));
+  TORCH_CHECK(
+      min_full_attn_seq_len <= max_seq_len && min_full_attn_seq_len >= 0,
+      "min_full_attn_seq_len must be between 0 and " +
+          std::to_string(max_seq_len));
+  TORCH_CHECK(
+      contextual_seq_len <= max_seq_len - 1 && contextual_seq_len >= 0,
+      "contextual_seq_len must be between 0 and " +
+          std::to_string(max_seq_len - 1));
   if (!is_jagged) {
     CHECK_SHAPE(q, batch_size, max_seq_len, num_heads, qk_head_size);
     CHECK_SHAPE(k, batch_size, max_seq_len, num_heads, qk_head_size);
@@ -767,7 +763,14 @@ std::vector<at::Tensor> hstu_mha_bwd(
   int const v_head_size_rounded = round_up_headdim(v_head_size);
   // Very important that these match the kernel configs
   bool const is_local = max_attn_len > 0;
-  int const kBlockM = kBlockM_bwd(arch, qk_head_size_rounded, causal, is_local);
+  int const kBlockM_sm90 = qk_head_size_rounded <= 64
+      ? 128
+      : (qk_head_size_rounded <= 96
+             ? 64
+             : (qk_head_size_rounded <= 128 ? (causal || is_local ? 64 : 80)
+                                            : 64));
+  int const kBlockM_sm80 = qk_head_size_rounded <= 64 ? 128 : 64;
+  int const kBlockM = arch >= 90 ? kBlockM_sm90 : kBlockM_sm80;
   auto round_multiple = [](int x, int m) { return (x + m - 1) / m * m; };
   int const max_seq_len_q_rounded = round_multiple(max_seq_len, kBlockM);
   int const total_seq_len_q_padded_rounded =
@@ -836,7 +839,6 @@ std::vector<at::Tensor> hstu_mha_bwd(
       dq_accum.data_ptr(),
       !is_jagged ? nullptr : seq_offsets_.data_ptr(),
       !has_multiple_targets ? nullptr : num_targets_.data_ptr(),
-      !has_attn_scale ? nullptr : attn_scale_.data_ptr(),
       !(sort_by_length && is_jagged) ? nullptr
                                      : sort_by_length_indices_.data_ptr(),
       causal,

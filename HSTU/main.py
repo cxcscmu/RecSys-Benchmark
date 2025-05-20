@@ -20,6 +20,7 @@ Main entry point for model training. Please refer to README.md for usage instruc
 
 import logging
 import os
+import time
 
 from typing import List, Optional
 
@@ -50,6 +51,40 @@ flags.DEFINE_string("gin_config_file", None, "Path to the config file.")
 flags.DEFINE_integer("master_port", 12355, "Master port.")
 FLAGS = flags.FLAGS  # pyre-ignore [5]
 
+class AutoFlushHandler(logging.StreamHandler):
+    def emit(self, record):
+        super().emit(record)
+        self.flush()
+
+class AutoFlushFileHandler(logging.FileHandler):
+    def emit(self, record):
+        super().emit(record)
+        self.flush()
+
+def setup_auto_flush_logger(rank):
+    log_dir = "./logs"
+    os.makedirs(log_dir, exist_ok=True)
+    
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    
+    # Remove all existing handlers
+    logger.handlers = []
+    
+    # Create handlers that auto-flush
+    console_handler = AutoFlushHandler(sys.stdout)
+    file_handler = AutoFlushFileHandler(
+        f"{log_dir}/worker_{rank}_{os.getpid()}_{time.strftime('%Y-%m-%d_%H-%M-%S')}.log"
+    )
+    
+    formatter = logging.Formatter('%(asctime)s - Rank %(process)d - %(levelname)s - %(message)s')
+    console_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
+    
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
+    
+    return logger
 
 def mp_train_fn(
     rank: int,
@@ -57,6 +92,11 @@ def mp_train_fn(
     master_port: int,
     gin_config_file: Optional[str],
 ) -> None:
+    
+    logger = setup_auto_flush_logger(rank)
+    
+    logger.info(f"Worker {rank} starting with PID {os.getpid()}")
+    
     if gin_config_file is not None:
         # Hack as absl doesn't support flag parsing inside multiprocessing.
         logging.info(f"Rank {rank}: loading gin config from {gin_config_file}")

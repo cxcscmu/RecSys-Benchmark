@@ -51,7 +51,6 @@ def test_attn(
     contextual_seq_len: int = 0,
     atol: Optional[float] = None,
     rtol: Optional[float] = None,
-    enable_tma: bool = False,
 ) -> None:
     set_dev_mode(True)
     torch.backends.cudnn.allow_tf32 = True
@@ -115,7 +114,6 @@ def test_attn(
         max_attn_len=max_attn_len,
         contextual_seq_len=contextual_seq_len,
         kernel=ref_kernel,
-        enable_tma=enable_tma,
     )
     dout = torch.randn_like(ref_out)
     ref_out.backward(dout)
@@ -146,7 +144,6 @@ def test_attn(
         max_attn_len=max_attn_len,
         contextual_seq_len=contextual_seq_len,
         kernel=real_kernel,
-        enable_tma=enable_tma,
     )
 
     torch.testing.assert_close(
@@ -179,7 +176,6 @@ def test_delta_attn(
     contextual_seq_len: int = 0,
     atol: Optional[float] = None,
     rtol: Optional[float] = None,
-    enable_tma: bool = False,
 ) -> None:
     set_dev_mode(True)
     torch.backends.cudnn.allow_tf32 = True
@@ -229,7 +225,6 @@ def test_delta_attn(
         max_attn_len=max_attn_len,
         contextual_seq_len=contextual_seq_len,
         kernel=ref_kernel,
-        enable_tma=enable_tma,
     )
 
     # real implementation
@@ -244,7 +239,6 @@ def test_delta_attn(
         max_attn_len=max_attn_len,
         contextual_seq_len=contextual_seq_len,
         kernel=real_kernel,
-        enable_tma=enable_tma,
     )
     torch.testing.assert_close(
         ref_out,

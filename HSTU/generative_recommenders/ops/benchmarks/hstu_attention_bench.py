@@ -75,7 +75,6 @@ def _flops(
 @click.option("--max-attn-len", type=int, default=0)
 @click.option("--contextual-seq-len", type=int, default=0)
 @click.option("--sampling-alpha", type=float, default=2.0)
-@click.option("--enable-tma", type=bool, default=False)
 def main(  # noqa: C901
     batch_size: int,
     heads: int,
@@ -95,7 +94,6 @@ def main(  # noqa: C901
     max_attn_len: int,
     contextual_seq_len: int,
     sampling_alpha: float,
-    enable_tma: bool,
 ) -> Optional[Tuple[List[triton.testing.Benchmark], List[pd.DataFrame]]]:
     torch.backends.cudnn.allow_tf32 = True
     torch.backends.cuda.matmul.allow_tf32 = True
@@ -150,7 +148,6 @@ def main(  # noqa: C901
                 "max_attn_len": max_attn_len,
                 "contextual_seq_len": contextual_seq_len,
                 "sampling_alpha": sampling_alpha,
-                "enable_tma": enable_tma,
             },
         )
         for mode in modes
@@ -175,7 +172,6 @@ def main(  # noqa: C901
         max_attn_len: int,
         contextual_seq_len: int,
         sampling_alpha: float,
-        enable_tma: bool,
     ) -> float:
         assert mode in ["fwd", "bwd"]
         warmup = 25
@@ -261,7 +257,6 @@ def main(  # noqa: C901
                 contextual_seq_len=contextual_seq_len,
                 sort_by_length=True,
                 kernel=_get_kernel(provider),
-                enable_tma=enable_tma,
             )
         if mode == "bwd":
             o = fn()
