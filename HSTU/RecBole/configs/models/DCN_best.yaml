@@ -1,0 +1,30 @@
+# Env
+checkpoint_dir: /data/group_data/cx_group/REC/checkpoints
+log_wandb: True 
+wandb_project: RecSys-Benchmark 
+show_progress: True
+save_dataset: False
+save_dataloaders: False
+
+# Training 
+epochs: 200
+train_batch_size: 1024
+learner: adam
+learning_rate: 0.0458685214896133
+loss_type: CE
+train_neg_sample_args:
+stopping_step: 10 # default 10 for ml, 50 for others 
+eval_step: 0
+threshold: {'rating': 3}
+normalize_field: ~
+normalize_all: True
+
+# Model 
+model: DCN
+embedding_size: 128                # (int) The embedding size of features = 6 * (cardinality)^(1/4), 26 for ml-100k, 141 for amazon-beauty
+mlp_hidden_size: [128, 128]     # (list of int) The hidden size of MLP layers.
+cross_layer_num: 6                # (int) The number of cross layers. 
+reg_weight: 2                     # (int) The L2 regularization weight.
+dropout_prob: 0.2                 # (float) The dropout rate.
+LABEL_FIELD: rating
+

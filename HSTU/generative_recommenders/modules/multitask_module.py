@@ -109,7 +109,7 @@ def _compute_labels_and_weights(
     supervision_weights: Dict[str, torch.Tensor],
     task_configs: List[TaskConfig],
     device: torch.device,
-    dtype: torch.dtype = torch.float32,
+    dtype: torch.dtype,
 ) -> Tuple[torch.Tensor, torch.Tensor]:
     first_label: torch.Tensor = list(supervision_labels.values())[0]
     default_supervision_weight = torch.ones_like(
@@ -258,16 +258,20 @@ class DefaultMultitaskModule(MultitaskModule):
                 supervision_weights=supervision_weights,
                 task_configs=self._task_configs,
                 device=encoded_user_embeddings.device,
+                dtype=encoded_user_embeddings.dtype,
             )
             mt_losses = _compute_loss(
                 task_offsets=self._task_offsets,
                 causal_multitask_weights=self._causal_multitask_weights,
-                mt_logits=mt_logits.to(mt_labels.dtype),
+                mt_logits=mt_logits,
                 mt_labels=mt_labels,
                 mt_weights=mt_weights,
                 has_multiple_task_types=self._has_multiple_task_types,
             )
-            mt_preds = mt_preds.to(orig_dtype)
+            mt_losses.to(orig_dtype)
+            mt_labels.to(orig_dtype)
+            mt_weights.to(orig_dtype)
+            mt_preds.to(orig_dtype)
 
         return (
             mt_preds,

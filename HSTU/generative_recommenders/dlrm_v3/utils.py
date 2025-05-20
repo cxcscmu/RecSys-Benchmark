@@ -29,9 +29,6 @@ import torch
 from generative_recommenders.dlrm_v3.datasets.dataset import DLRMv3RandomDataset
 from generative_recommenders.dlrm_v3.datasets.kuairand import DLRMv3KuaiRandDataset
 from generative_recommenders.dlrm_v3.datasets.movie_lens import DLRMv3MovieLensDataset
-from generative_recommenders.dlrm_v3.datasets.synthetic_movie_lens import (
-    DLRMv3SyntheticMovieLensDataset,
-)
 
 from generative_recommenders.modules.multitask_module import (
     MultitaskTaskType,
@@ -233,25 +230,15 @@ class MetricsLogger:
                     )
         return all_computed_metrics
 
-    def reset(self):
-        for metric in self.all_metrics:
-            metric.reset()
-
 
 # the datasets we support
-SUPPORTED_DATASETS = [
-    "debug",
-    "movielens-1m",
-    "movielens-20m",
-    "movielens-13b",
-    "kuairand-1k",
-]
+SUPPORTED_DATASETS = ["debug", "movielens-1m", "movielens-20m", "kuairand-1k"]
 
 
-def get_dataset(name: str, new_path_prefix: str = ""):
+def get_dataset(name: str, new_path_prefix: str = "", max_seq_len: int = 2048):
     assert name in SUPPORTED_DATASETS, f"dataset {name} not supported"
     if name == "debug":
-        return DLRMv3RandomDataset, {}
+        return DLRMv3RandomDataset, {"max_seq_len": max_seq_len}
     if name == "movielens-1m":
         return (
             DLRMv3MovieLensDataset,
@@ -259,6 +246,7 @@ def get_dataset(name: str, new_path_prefix: str = ""):
                 "ratings_file": os.path.join(
                     new_path_prefix, "data/ml-1m/sasrec_format.csv"
                 ),
+                "max_seq_len": max_seq_len,
             },
         )
     if name == "movielens-20m":
@@ -268,15 +256,7 @@ def get_dataset(name: str, new_path_prefix: str = ""):
                 "ratings_file": os.path.join(
                     new_path_prefix, "data/ml-20m/sasrec_format.csv"
                 ),
-            },
-        )
-    if name == "movielens-13b":
-        return (
-            DLRMv3SyntheticMovieLensDataset,
-            {
-                "ratings_file_prefix": os.path.join(
-                    new_path_prefix, "data/ml-13b/16x16384"
-                ),
+                "max_seq_len": max_seq_len,
             },
         )
     if name == "kuairand-1k":
@@ -286,5 +266,6 @@ def get_dataset(name: str, new_path_prefix: str = ""):
                 "seq_logs_file": os.path.join(
                     new_path_prefix, "data/KuaiRand-1K/data/processed_seqs.csv"
                 ),
+                "max_seq_len": max_seq_len,
             },
         )

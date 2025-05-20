@@ -15,7 +15,7 @@
 #!/usr/bin/env python3
 
 
-from typing import List, Tuple
+from typing import List
 
 import torch
 
@@ -24,8 +24,7 @@ import triton
 
 # @manual=//triton:triton
 import triton.language as tl
-from generative_recommenders.common import triton_autotune, triton_cc
-
+from generative_recommenders.common import triton_autotune
 
 ENABLE_FULL_TURNING_SPACE = False
 
@@ -162,21 +161,6 @@ def get_mm_configs() -> List[triton.Config]:
         ]
 
 
-@triton_cc(
-    annotations={
-        "M": "i32",
-        "N": ("i32", 16),
-        "K": ("i32", 16),
-        "stride_xm": ("i32", 16),
-        "stride_xk": ("i32", 1),
-        "stride_wk": ("i32", 16),
-        "stride_wn": ("i32", 1),
-        "stride_ym": ("i32", 16),
-        "stride_yn": ("i32", 1),
-        "stride_zm": ("i32", 16),
-        "stride_zn": ("i32", 1),
-    },
-)
 @triton_autotune(
     configs=get_mm_configs(),
     key=["N", "K"],
@@ -253,68 +237,6 @@ def _addmm_fwd(
     tl.store(z_ptrs, z, mask=z_mask)
 
 
-@torch.fx.wrap
-def triton_addmm_fwd(
-    x: torch.Tensor,
-    w: torch.Tensor,
-    y: torch.Tensor,
-) -> torch.Tensor:
-    M, K = x.shape
-    KB, N = w.shape
-    assert K == KB, f"incompatible dimensions {K}, {KB}"
-
-    is_y_1d = y.dim() == 1
-    NY = y.shape[0] if is_y_1d else y.shape[1]
-    assert N == NY, f"incompatible dimensions {N}, {NY}"
-
-    # Allocate output
-    z = torch.empty((M, N), device=x.device, dtype=x.dtype)
-    if M == 0 or N == 0:
-        return z
-
-    grid = lambda meta: (  # noqa E731
-        triton.cdiv(M, meta["BLOCK_M"]),
-        triton.cdiv(N, meta["BLOCK_N"]),
-    )
-
-    _addmm_fwd[grid](
-        x,
-        w,
-        y,
-        z,
-        M,
-        N,
-        K,
-        x.stride(0),
-        x.stride(1),
-        w.stride(0),
-        w.stride(1),
-        y.stride(0) if not is_y_1d else 0,
-        y.stride(1) if not is_y_1d else y.stride(0),
-        z.stride(0),
-        z.stride(1),
-        ALLOW_TF32=torch.backends.cuda.matmul.allow_tf32,
-        BROADCAST_Y=is_y_1d,
-    )
-    return z
-
-
-def triton_addmm_bwd(
-    x: torch.Tensor,
-    w: torch.Tensor,
-    dz: torch.Tensor,
-    is_y_1d: bool,
-) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-    if is_y_1d:
-        dy = torch.sum(dz, dim=0)
-    else:
-        dy = dz
-    dw = torch.mm(x.t(), dz)
-    dx = torch.mm(dz, w.t())
-
-    return dx, dw, dy
-
-
 class _AddMmFunction(torch.autograd.Function):
     @staticmethod
     # pyre-ignore[14]
@@ -324,22 +246,35 @@ class _AddMmFunction(torch.autograd.Function):
         w: torch.Tensor,
         y: torch.Tensor,
     ) -> torch.Tensor:
-        ctx.save_for_backward(x, w)
-        ctx.is_y_1d = y.dim() == 1
-        return triton_addmm_fwd(x, w, y)
+        M, K = x.shape
+        KB, N = w.shape
+        assert K == KB, f"incompatible dimensions {K}, {KB}"
 
-    @staticmethod
-    # pyre-ignore[14]
-    def backward(
-        ctx, dz: torch.Tensor
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        (x, w) = ctx.saved_tensors
-        return triton_addmm_bwd(x, w, dz, ctx.is_y_1d)
+        z = torch.empty((M, N), device=x.device, dtype=x.dtype)
+        if M == 0 or N == 0:
+            return z
 
+        grid = lambda meta: (  # noqa E731
+            triton.cdiv(M, meta["BLOCK_M"]),
+            triton.cdiv(N, meta["BLOCK_N"]),
+        )
 
-def triton_addmm(
-    input: torch.Tensor,
-    mat1: torch.Tensor,
-    mat2: torch.Tensor,
-) -> torch.Tensor:
-    return _AddMmFunction.apply(mat1, mat2, input)
+        _addmm_fwd[grid](
+            x,
+            w,
+            y,
+            z,
+            M,
+            N,
+            K,
+            x.stride(0),
+            x.stride(1),
+            w.stride(0),
+            w.stride(1),
+            y.stride(0),
+            y.stride(1),
+            z.stride(0),
+            z.stride(1),
+            ALLOW_TF32=torch.backends.cuda.matmul.allow_tf32,
+        )
+        return z

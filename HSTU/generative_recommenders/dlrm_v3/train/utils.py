@@ -122,6 +122,10 @@ class HammerToTorchDataset(TorchDataset):
 @gin.configurable
 def make_model(
     dataset: str,
+    use_gpu: bool,
+    custom_kernel: bool,
+    bf16_training: bool,
+    max_hash_size: Optional[int],
 ) -> Tuple[torch.nn.Module, DlrmHSTUConfig, Dict[str, EmbeddingConfig]]:
     hstu_config = get_hstu_configs(dataset)
     table_config = get_embedding_table_config(dataset)
@@ -146,6 +150,7 @@ def dense_optimizer_factory_and_class(
     betas: Tuple[float, float],
     eps: float,
     weight_decay: float,
+    ams_grad: bool,
     momentum: float,
     learning_rate: float,
 ) -> Tuple[
@@ -172,6 +177,7 @@ def sparse_optimizer_factory_and_class(
     betas: Tuple[float, float],
     eps: float,
     weight_decay: float,
+    ams_grad: bool,
     momentum: float,
     learning_rate: float,
 ) -> Tuple[
@@ -236,7 +242,7 @@ def make_optimizer_and_shard(
     all_optimizers = []
     all_params = {}
     non_fused_sparse_params = {}
-    for k, v in in_backward_optimizer_filter(model.named_parameters()):
+    for k, v in in_backward_optimizer_filter(module.named_parameters()):
         if v.requires_grad:
             if isinstance(v, ShardedTensor):
                 non_fused_sparse_params[k] = v
@@ -278,8 +284,11 @@ def make_train_test_dataloaders(
     new_path_prefix: str = "",
     num_workers: int = 0,
     prefetch_factor: Optional[int] = None,
+    max_seq_len: int = 2056,
 ) -> Tuple[DataLoader, DataLoader]:
-    dataset_class, kwargs = get_dataset(dataset_type, new_path_prefix)
+    dataset_class, kwargs = get_dataset(
+        dataset_type, new_path_prefix, max_seq_len=max_seq_len
+    )
     kwargs["embedding_config"] = embedding_table_configs
 
     # Create dataset
@@ -389,7 +398,7 @@ def eval_loop(
     model = model.eval()
     batch_idx: int = 0
     profiler = Profiler(rank, active=10) if output_trace else None
-    metric_logger.reset()
+
     for sample in dataloader:
         sample.to(device)
         (
@@ -404,9 +413,9 @@ def eval_loop(
             sample.candidates_features_kjt,
         )
         metric_logger.update(
-            predictions=mt_target_preds,
-            labels=mt_target_labels,
-            weights=mt_target_weights,
+            predictions=mt_target_preds.t(),
+            labels=mt_target_labels.t(),
+            weights=mt_target_weights.t(),
         )
         batch_idx += 1
         if output_trace:

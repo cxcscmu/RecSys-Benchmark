@@ -18,7 +18,6 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 import os
-import sys
 
 import traceback
 
@@ -44,9 +43,6 @@ logger: logging.Logger = logging.getLogger(__name__)
 SUPPORTED_CONFIGS = {
     "debug": "debug.gin",
     "kuairand-1k": "kuairand_1k.gin",
-    "movielens-1m": "movielens_1m.gin",
-    "movielens-20m": "movielens_20m.gin",
-    "movielens-13b": "movielens_13b.gin",
 }
 
 
@@ -68,6 +64,7 @@ def _main_func(
     # parse all arguments
     gin.parse_config_file(gin_file)
 
+    # dataset = make_dataset
     model, model_configs, embedding_table_configs = make_model()
     model, optimizer = make_optimizer_and_shard(model=model, device=device)
     load_dmp_checkpoint(model, optimizer)
@@ -78,7 +75,7 @@ def _main_func(
     metrics = MetricsLogger(
         multitask_configs=model_configs.multitask_configs,
         batch_size=train_dataloader.batch_size,
-        window_size=1000 if mode == "train" else sys.maxsize,
+        window_size=1000,
         device=device,
         rank=rank,
     )

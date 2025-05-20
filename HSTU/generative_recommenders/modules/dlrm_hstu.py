@@ -105,7 +105,7 @@ def _get_supervision_labels_and_weights(
     supervision_weights: Dict[str, torch.Tensor] = {}
     for task in task_configs:
         if task.task_type == MultitaskTaskType.REGRESSION:
-            supervision_labels[task.task_name] = watchtime_sequence.to(torch.float32)
+            supervision_labels[task.task_name] = watchtime_sequence
         elif task.task_type == MultitaskTaskType.BINARY_CLASSIFICATION:
             supervision_labels[task.task_name] = (
                 torch.bitwise_and(supervision_bitmasks, task.task_weight) > 0
@@ -164,10 +164,8 @@ class DlrmHSTU(HammerModule):
             num_position_buckets=8192,
             num_time_buckets=2048,
             embedding_dim=hstu_configs.hstu_transducer_embedding_dim,
-            contextual_seq_len=sum(
-                dict(hstu_configs.contextual_feature_to_max_length).values()
-            ),
             is_inference=self._is_inference,
+            use_time_encoding=True,
         )
 
         if hstu_configs.enable_postprocessor:
@@ -276,21 +274,19 @@ class DlrmHSTU(HammerModule):
 
     def _user_forward(
         self,
-        max_uih_len: int,
-        max_candidates: int,
-        seq_embeddings: Dict[str, SequenceEmbedding],
         payload_features: Dict[str, torch.Tensor],
+        seq_embeddings: Dict[str, SequenceEmbedding],
         num_candidates: torch.Tensor,
     ) -> torch.Tensor:
         source_lengths = seq_embeddings[
             self._hstu_configs.uih_post_id_feature_name
         ].lengths
+        runtime_max_seq_len = fx_infer_max_len(source_lengths)
         source_timestamps = payload_features[
             self._hstu_configs.uih_action_time_feature_name
         ]
         candidates_user_embeddings, _ = self._hstu_transducer(
-            max_uih_len=max_uih_len,
-            max_targets=max_candidates,
+            max_seq_len=runtime_max_seq_len,
             seq_embeddings=seq_embeddings[
                 self._hstu_configs.uih_post_id_feature_name
             ].embedding,
@@ -383,7 +379,6 @@ class DlrmHSTU(HammerModule):
                 else:
                     values_right = candidates_features[candidate_feature_name].values()
                 merged_values = concat_2D_jagged(
-                    max_seq_len=max_uih_len + max_num_candidates,
                     max_len_left=max_uih_len,
                     offsets_left=torch.ops.fbgemm.asynchronous_complete_cumsum(
                         uih_seq_lengths
@@ -447,7 +442,6 @@ class DlrmHSTU(HammerModule):
                 seq_embeddings[uih_feature_name] = SequenceEmbedding(
                     lengths=uih_seq_lengths + num_candidates,
                     embedding=concat_2D_jagged(
-                        max_seq_len=max_uih_len + max_num_candidates,
                         max_len_left=max_uih_len,
                         offsets_left=torch.ops.fbgemm.asynchronous_complete_cumsum(
                             uih_seq_lengths
@@ -468,10 +462,8 @@ class DlrmHSTU(HammerModule):
             )
         with record_function("## user_forward ##"):
             candidates_user_embeddings = self._user_forward(
-                max_uih_len=max_uih_len,
-                max_candidates=max_num_candidates,
-                seq_embeddings=seq_embeddings,
-                payload_features=payload_features,
+                payload_features,
+                seq_embeddings,
                 num_candidates=num_candidates,
             )
         with record_function("## multitask_module ##"):

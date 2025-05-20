@@ -38,8 +38,7 @@ class InputPreprocessor(HammerModule):
     @abc.abstractmethod
     def forward(
         self,
-        max_uih_len: int,
-        max_targets: int,
+        max_seq_len: int,
         seq_lengths: torch.Tensor,
         seq_timestamps: torch.Tensor,
         seq_embeddings: torch.Tensor,
@@ -181,8 +180,7 @@ class ContextualPreprocessor(InputPreprocessor):
 
     def forward(  # noqa C901
         self,
-        max_uih_len: int,
-        max_targets: int,
+        max_seq_len: int,
         seq_lengths: torch.Tensor,
         seq_timestamps: torch.Tensor,
         seq_embeddings: torch.Tensor,
@@ -198,13 +196,9 @@ class ContextualPreprocessor(InputPreprocessor):
         Dict[str, torch.Tensor],
     ]:
         output_seq_embeddings = self._content_embedding_mlp(seq_embeddings)
-        max_seq_len = max_uih_len + max_targets
         if self._action_weights is not None:
             action_embeddings = self._action_encoder(
-                max_seq_len=max_seq_len,
                 seq_lengths=seq_lengths,
-                seq_offsets=torch.ops.fbgemm.asynchronous_complete_cumsum(seq_lengths),
-                num_targets=num_targets,
                 seq_payloads=seq_payloads,
             )
             output_seq_embeddings = output_seq_embeddings + self._action_embedding_mlp(
@@ -228,9 +222,9 @@ class ContextualPreprocessor(InputPreprocessor):
                 dtype=seq_embeddings.dtype,
             )
             contextual_embeddings = torch.baddbmm(
-                self._batched_contextual_linear_bias.view(
-                    -1, 1, self._output_embedding_dim
-                ).to(contextual_input_embeddings.dtype),
+                self._batched_contextual_linear_bias.to(
+                    contextual_input_embeddings.dtype
+                ),
                 contextual_input_embeddings.view(
                     -1, self._max_contextual_seq_len, self._input_embedding_dim
                 ).transpose(0, 1),
@@ -239,7 +233,6 @@ class ContextualPreprocessor(InputPreprocessor):
                 ),
             ).transpose(0, 1)
             output_seq_embeddings = concat_2D_jagged(
-                max_seq_len=self._max_contextual_seq_len + output_max_seq_len,
                 values_left=fx_unwrap_optional_tensor(contextual_embeddings).reshape(
                     -1, self._output_embedding_dim
                 ),
@@ -251,7 +244,6 @@ class ContextualPreprocessor(InputPreprocessor):
                 kernel=self.hammer_kernel(),
             )
             output_seq_timestamps = concat_2D_jagged(
-                max_seq_len=self._max_contextual_seq_len + output_max_seq_len,
                 values_left=torch.zeros(
                     (output_seq_lengths.size(0) * self._max_contextual_seq_len, 1),
                     dtype=output_seq_timestamps.dtype,

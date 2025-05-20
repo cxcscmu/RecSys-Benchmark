@@ -64,14 +64,8 @@ class ContextualInterleavePreprocessorTest(unittest.TestCase):
 
         content_encoder = ContentEncoder(
             input_embedding_dim=input_embedding_dim,
-            additional_content_features={
-                "a0": input_embedding_dim,
-                "a1": input_embedding_dim,
-            },
-            target_enrich_features={
-                "t0": input_embedding_dim,
-                "t1": input_embedding_dim,
-            },
+            additional_content_feature_names=["a0", "a1"],
+            target_enrich_feature_names=["t0", "t1"],
             is_inference=False,
         ).to(device)
         action_embedding_dim = 32
@@ -151,8 +145,8 @@ class ContextualInterleavePreprocessorTest(unittest.TestCase):
             [1, 2, 3, 4, 5, 6, 10, 20, 30],
             device=device,
         )
-        watchtimes = [40, 20, 110, 31, 26, 55]
-        actions = [1, 3, 26, 30, 6, 4]
+        watchtimes = [40, 20, 110, 31, 26, 55, 33, 71, 66]
+        actions = [1, 3, 26, 30, 6, 4, 8, 6, 8]
         (
             output_max_seq_len,
             output_seq_lengths,
@@ -162,8 +156,7 @@ class ContextualInterleavePreprocessorTest(unittest.TestCase):
             output_num_targets,
             _,
         ) = preprocessor(
-            max_uih_len=4,
-            max_targets=2,
+            max_seq_len=6,
             seq_lengths=torch.tensor(seq_lengths, device=device),
             seq_timestamps=seq_timestamps,
             seq_embeddings=seq_embeddings,

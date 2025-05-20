@@ -69,12 +69,54 @@ class DatasetV2(torch.utils.data.Dataset):
         user_id = data.user_id
 
         def eval_as_list(x: str, ignore_last_n: int) -> List[int]:
-            y = eval(x)
-            y_list = [y] if type(y) == int else list(y)
-            if ignore_last_n > 0:
-                # for training data creation
-                y_list = y_list[:-ignore_last_n]
-            return y_list
+            # print(f'{x=}')
+            # y = eval(x)
+            # y_list = [y] if type(y) == int else list(y)
+
+            # if ignore_last_n > 0:
+            #     # for training data creation
+            #     y_list = y_list[:-ignore_last_n]
+            # return y_list
+
+            if hasattr(x, 'dtype') and 'int' in str(x.dtype):
+                # NumPy integer
+                return [int(x)]
+            elif isinstance(x, int):
+                # Python integer
+                return [x]
+            elif isinstance(x, str):
+                y = eval(x)
+                y_list = [y] if type(y) == int else list(y)
+
+                if ignore_last_n > 0:
+                    # for training data creation
+                    y_list = y_list[:-ignore_last_n]
+                return y_list
+
+            # try:
+            #     y = eval(x)
+            #     y_list = [y] if type(y) == int else list(y)
+            # except Exception as e:
+            #     import sys
+            #     print(f"{x=}")
+            #     print(f"Original string (bytes): {repr(x)}")
+            #     print(f"Exception: {type(e).__name__}: {e}")
+            #     print(f"{data=}")
+            #     print(f"{data.sequence_item_ids=}")
+            #     print(f"{int(data.sequence_item_ids)=}")
+            #     print(f"{int(x)=}")
+            #     print(f"{isinstance(x, int)=}")
+            #     print(f"{isinstance(x, str)=}")
+
+            #     sys.stdout.flush()
+            #     sys.stderr.flush()
+            #     # Try writing to a file as a last resort
+            #     with open('error_log.txt', 'a') as f:
+            #         f.write(f"Original string (bytes): {repr(x)}\n")
+            #         f.write(f"Exception: {type(e).__name__}: {e}\n")
+            #         f.write(f"{data=}\n")
+            #     # Re-raise the exception after printing debug info
+            #     raise
 
         def eval_int_list(
             x: str,
@@ -99,6 +141,8 @@ class DatasetV2(torch.utils.data.Dataset):
             ).tolist()
         else:
             sampling_kept_mask = None
+
+        # print(f'{user_id=}, data.sequence_item_ids: {data.sequence_item_ids}')
 
         movie_history, movie_history_len = eval_int_list(
             data.sequence_item_ids,

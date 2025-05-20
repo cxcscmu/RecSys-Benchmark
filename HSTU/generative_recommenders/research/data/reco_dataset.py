@@ -41,68 +41,39 @@ def get_reco_dataset(
     max_sequence_length: int,
     chronological: bool,
     positional_sampling_ratio: float = 1.0,
+    eval_set: str = "valid",
 ) -> RecoDataset:
     if dataset_name == "ml-1m":
         dp = get_common_preprocessors()[dataset_name]
         train_dataset = DatasetV2(
-            ratings_file=dp.output_format_csv(),
+            ratings_file=dp.sasrec_format_csv_by_user_train(),
             padding_length=max_sequence_length + 1,  # target
-            ignore_last_n=1,
+            ignore_last_n=0,
             chronological=chronological,
             sample_ratio=positional_sampling_ratio,
         )
         eval_dataset = DatasetV2(
-            ratings_file=dp.output_format_csv(),
+            ratings_file=dp.sasrec_format_csv_by_user_valid() if eval_set == "valid" else dp.sasrec_format_csv_by_user_test(),   # valid or test
             padding_length=max_sequence_length + 1,  # target
             ignore_last_n=0,
             chronological=chronological,
             sample_ratio=1.0,  # do not sample
         )
-    elif dataset_name == "ml-20m":
+    elif dataset_name == "amzn-beauty" or dataset_name == "amzn-toys" or dataset_name == "amzn-sports" or dataset_name == "amzn-books":
         dp = get_common_preprocessors()[dataset_name]
         train_dataset = DatasetV2(
-            ratings_file=dp.output_format_csv(),
+            ratings_file=dp.sasrec_format_csv_by_user_train(),
             padding_length=max_sequence_length + 1,  # target
-            ignore_last_n=1,
+            ignore_last_n=0,
             chronological=chronological,
+            sample_ratio=positional_sampling_ratio,
         )
         eval_dataset = DatasetV2(
-            ratings_file=dp.output_format_csv(),
+            ratings_file=dp.sasrec_format_csv_by_user_valid() if eval_set == "valid" else dp.sasrec_format_csv_by_user_test(),   # valid or test
             padding_length=max_sequence_length + 1,  # target
             ignore_last_n=0,
             chronological=chronological,
-        )
-    elif dataset_name == "ml-3b":
-        dp = get_common_preprocessors()[dataset_name]
-        train_dataset = MultiFileDatasetV2(
-            file_prefix="tmp/ml-3b/16x32",
-            num_files=16,
-            padding_length=max_sequence_length + 1,  # target
-            ignore_last_n=1,
-            chronological=chronological,
-        )
-        eval_dataset = MultiFileDatasetV2(
-            file_prefix="tmp/ml-3b/16x32",
-            num_files=16,
-            padding_length=max_sequence_length + 1,  # target
-            ignore_last_n=0,
-            chronological=chronological,
-        )
-    elif dataset_name == "amzn-books":
-        dp = get_common_preprocessors()[dataset_name]
-        train_dataset = DatasetV2(
-            ratings_file=dp.output_format_csv(),
-            padding_length=max_sequence_length + 1,  # target
-            ignore_last_n=1,
-            shift_id_by=1,  # [0..n-1] -> [1..n]
-            chronological=chronological,
-        )
-        eval_dataset = DatasetV2(
-            ratings_file=dp.output_format_csv(),
-            padding_length=max_sequence_length + 1,  # target
-            ignore_last_n=0,
-            shift_id_by=1,  # [0..n-1] -> [1..n]
-            chronological=chronological,
+            sample_ratio=1.0,  # do not sample
         )
     else:
         raise ValueError(f"Unknown dataset {dataset_name}")

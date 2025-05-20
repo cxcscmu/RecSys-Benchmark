@@ -36,18 +36,9 @@ except OSError:
     pass
 
 try:
-    from generative_recommenders.fb.triton_cc.utils import triton_cc
     from hammer.ops.triton.utils import triton_autotune
     from hammer.utils import is_dev_mode, set_dev_mode, set_verbose_level
 except ImportError:
-    # pyre-ignore
-    def triton_cc(annotations):
-        # pyre-ignore
-        def decorator(fn):
-            return fn
-
-        return decorator
-
     # pyre-ignore
     def triton_autotune(
         configs: List[triton.Config],
@@ -117,7 +108,7 @@ class HammerModule(torch.nn.Module, abc.ABC):
         self,
         is_inference: bool,
         training_dytpe: torch.dtype = torch.float32,
-        use_triton_cc: bool = _use_triton_cc,
+        use_triton_cc: bool = False,
         hammer_kernel: Optional[HammerKernel] = None,
     ) -> None:
         super().__init__()
@@ -261,7 +252,7 @@ def prev_power_of_2(x: int) -> int:
 
 
 STATIC_MAX_SEQ_LENS: List[int] = []
-USE_RUNTIME_MAX_SEQ_LEN: bool = False
+USE_RUNTIME_MAX_SEQ_LEN: bool = True
 
 
 def set_static_max_seq_lens(max_seq_lens: List[int]) -> None:
@@ -281,8 +272,6 @@ def autotune_max_seq_len(runtime_max_seq_len: int) -> int:
     if USE_RUNTIME_MAX_SEQ_LEN:
         return prev_power_of_2(runtime_max_seq_len)
     else:
-        if STATIC_MAX_SEQ_LENS == []:
-            return 1
         for max_len in STATIC_MAX_SEQ_LENS:
             if max_len >= runtime_max_seq_len:
                 return max_len

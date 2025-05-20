@@ -18,13 +18,11 @@
 
 from typing import Optional, Tuple
 
+import hstu_flash_attention  # @manual  # pyre-ignore[21]
+
 import torch
 
-torch.ops.load_library(
-    "//generative_recommenders/ops/cpp/hstu_attention:hstu_flash_attention"
-)
-
-from generative_recommenders.ops.triton.triton_addmm import (
+from generative_recommenders.ops.triton.triton_hstu_linear import (
     triton_addmm_bwd,
     triton_addmm_fwd,
 )
@@ -54,14 +52,12 @@ class _HSTUPreprocessAndAttentionFunction(torch.autograd.Function):
         alpha: float,
         invalid_attn_mask_type: str,
         num_targets: Optional[torch.Tensor],
-        attn_scale: Optional[torch.Tensor] = None,
         recompute_uvqk_in_backward: bool = False,
         recompute_normed_x_in_backward: bool = False,
         contextual_seq_len: int = 0,
         sort_by_length: bool = False,
         max_attn_len: Optional[int] = None,
         full_attn_size: Optional[int] = None,
-        silu_u: bool = True,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         max_attn_len = max_attn_len or 0
         full_attn_size = full_attn_size or 0
@@ -85,11 +81,8 @@ class _HSTUPreprocessAndAttentionFunction(torch.autograd.Function):
         q = q.view(-1, num_heads, attn_dim)
         k = k.view(-1, num_heads, attn_dim)
         v = v.view(-1, num_heads, hidden_dim)
-        if silu_u:
-            u = F.silu(u)
-        elif recompute_uvqk_in_backward:
-            u = u.clone()  # otherwise the whole uvqk will be saved
-        out = torch.ops.hstu.hstu_mha_fwd(
+        silu_u = F.silu(u)
+        out = hstu_flash_attention.forward(
             max_seq_len,
             alpha,
             q,
@@ -98,7 +91,6 @@ class _HSTUPreprocessAndAttentionFunction(torch.autograd.Function):
             seq_offsets,
             True,  # causal
             num_targets,
-            attn_scale,
             max_attn_len,
             full_attn_size,
             contextual_seq_len,
@@ -119,8 +111,6 @@ class _HSTUPreprocessAndAttentionFunction(torch.autograd.Function):
         ]
         if num_targets is not None:
             saved_tensors.append(num_targets)
-        if attn_scale is not None:
-            saved_tensors.append(attn_scale)
         if not recompute_normed_x_in_backward:
             saved_tensors.append(normed_x)
         if recompute_uvqk_in_backward:
@@ -131,7 +121,6 @@ class _HSTUPreprocessAndAttentionFunction(torch.autograd.Function):
         ctx.alpha = alpha
         ctx.invalid_attn_mask_type = invalid_attn_mask_type
         ctx.has_multiple_targets = num_targets is not None
-        ctx.has_attn_scale = attn_scale is not None
         ctx.max_seq_len = max_seq_len
         ctx.max_attn_len = max_attn_len
         ctx.full_attn_size = full_attn_size
@@ -146,14 +135,13 @@ class _HSTUPreprocessAndAttentionFunction(torch.autograd.Function):
         ctx.norm_num_warps = num_warps
         ctx.contextual_seq_len = contextual_seq_len
         ctx.sort_by_length = sort_by_length
-        ctx.silu_u = silu_u
-        return u, out
+        return silu_u, out
 
     @staticmethod
     # pyre-ignore[14]
     def backward(
         ctx,  # pyre-ignore[2]
-        _du: torch.Tensor,
+        dsilu_u: torch.Tensor,
         dout: torch.Tensor,
     ) -> Tuple[
         torch.Tensor,  # d_x
@@ -176,8 +164,6 @@ class _HSTUPreprocessAndAttentionFunction(torch.autograd.Function):
         None,
         None,
         None,
-        None,
-        None,
     ]:
         x, norm_weight, norm_bias, x_mean, x_rstd, uvqk_weight, seq_offsets = (
             ctx.saved_tensors[:7]
@@ -188,11 +174,6 @@ class _HSTUPreprocessAndAttentionFunction(torch.autograd.Function):
             idx += 1
         else:
             num_targets = None
-        if ctx.has_attn_scale:
-            attn_scale = ctx.saved_tensors[idx]
-            idx += 1
-        else:
-            attn_scale = None
         if ctx.recompute_normed_x_in_backward:
             normed_x, _, _, _, _ = triton_weighted_layer_norm_fwd(
                 x=x,
@@ -239,7 +220,7 @@ class _HSTUPreprocessAndAttentionFunction(torch.autograd.Function):
         dk = dk.view(-1, ctx.num_heads, ctx.attn_dim)
         dv = dv.view(-1, ctx.num_heads, ctx.hidden_dim)
         # Note: the two operations below update duvqk in place
-        _dq, _dk, _dv = torch.ops.hstu.hstu_mha_bwd(
+        _dq, _dk, _dv = hstu_flash_attention.backward(
             ctx.max_seq_len,
             ctx.alpha,
             dout,
@@ -252,7 +233,6 @@ class _HSTUPreprocessAndAttentionFunction(torch.autograd.Function):
             seq_offsets,
             True,  # causal
             num_targets,
-            attn_scale,
             ctx.max_attn_len,
             ctx.full_attn_size,
             ctx.contextual_seq_len,
@@ -266,11 +246,7 @@ class _HSTUPreprocessAndAttentionFunction(torch.autograd.Function):
             dk.copy_(_dk)
         if dv.data_ptr() != _dv.data_ptr():
             dv.copy_(_dv)
-        if ctx.silu_u:
-            torch.ops.aten.silu_backward(_du, u, grad_input=du)
-        else:
-            if du.data_ptr() != _du.data_ptr():
-                du.copy_(_du)
+        torch.ops.aten.silu_backward(dsilu_u, u, grad_input=du)
         d_normed_x, d_uvqk_weight, d_uvqk_bias = triton_addmm_bwd(
             x=normed_x,
             w=uvqk_weight,
@@ -311,8 +287,6 @@ class _HSTUPreprocessAndAttentionFunction(torch.autograd.Function):
             None,
             None,
             None,
-            None,
-            None,
         )
 
 
@@ -331,14 +305,12 @@ def cuda_hstu_preprocess_and_attention(
     alpha: float,
     invalid_attn_mask_type: str,
     num_targets: Optional[torch.Tensor],
-    attn_scale: Optional[torch.Tensor] = None,
     recompute_uvqk_in_backward: bool = False,
     recompute_normed_x_in_backward: bool = False,
     contextual_seq_len: int = 0,
     sort_by_length: bool = False,
     max_attn_len: Optional[int] = None,
     full_attn_size: Optional[int] = None,
-    silu_u: bool = True,
 ) -> Tuple[torch.Tensor, torch.Tensor]:
     return _HSTUPreprocessAndAttentionFunction.apply(
         x,
@@ -355,12 +327,10 @@ def cuda_hstu_preprocess_and_attention(
         alpha,
         invalid_attn_mask_type,
         num_targets,
-        attn_scale,
         recompute_uvqk_in_backward,
         recompute_normed_x_in_backward,
         contextual_seq_len,
         sort_by_length,
         max_attn_len,
         full_attn_size,
-        silu_u,
     )

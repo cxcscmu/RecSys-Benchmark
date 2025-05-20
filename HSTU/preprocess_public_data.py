@@ -23,9 +23,15 @@ from generative_recommenders.research.data.preprocessor import get_common_prepro
 
 def main() -> None:
     get_common_preprocessors()["ml-1m"].preprocess_rating()
-    get_common_preprocessors()["ml-20m"].preprocess_rating()
-    # get_common_preprocessors()["ml-1b"].preprocess_rating()
+    # get_common_preprocessors()["ml-20m"].preprocess_rating()
+    # # get_common_preprocessors()["ml-1b"].preprocess_rating()
+    # get_common_preprocessors()["amzn-books"].preprocess_rating()
+    get_common_preprocessors()["amzn-beauty"].preprocess_rating()
+    get_common_preprocessors()["amzn-toys"].preprocess_rating()
+    get_common_preprocessors()["amzn-sports"].preprocess_rating()
     get_common_preprocessors()["amzn-books"].preprocess_rating()
+
+
 
 
 if __name__ == "__main__":

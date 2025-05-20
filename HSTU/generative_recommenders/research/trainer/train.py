@@ -122,7 +122,7 @@ def train_fn(
     num_warmup_steps: int = 0,
     weight_decay: float = 1e-3,
     top_k_method: str = "MIPSBruteForceTopK",
-    eval_interval: int = 100,
+    eval_interval: int = 1000,
     full_eval_every_n: int = 1,
     save_ckpt_every_n: int = 1000,
     partial_eval_num_iters: int = 32,
@@ -133,6 +133,8 @@ def train_fn(
     l2_norm_eps: float = 1e-6,
     enable_tf32: bool = False,
     random_seed: int = 42,
+    resume_from_checkpoint: Optional[str] = None,
+    eval_set: str = "valid",
 ) -> None:
     # to enable more deterministic results.
     random.seed(random_seed)
@@ -148,6 +150,7 @@ def train_fn(
         max_sequence_length=max_sequence_length,
         chronological=True,
         positional_sampling_ratio=positional_sampling_ratio,
+        eval_set=eval_set,
     )
 
     train_data_sampler, train_data_loader = create_data_loader(
@@ -266,7 +269,7 @@ def train_fn(
     model = model.to(device)
     ar_loss = ar_loss.to(device)
     negatives_sampler = negatives_sampler.to(device)
-    model = DDP(model, device_ids=[rank], broadcast_buffers=False)
+    # model = DDP(model, device_ids=[rank], broadcast_buffers=False)
 
     # TODO: wrap in create_optimizer.
     opt = torch.optim.AdamW(
@@ -276,17 +279,75 @@ def train_fn(
         weight_decay=weight_decay,
     )
 
-    date_str = date.today().strftime("%Y-%m-%d")
+    # Initialize starting epoch and batch ID
+    start_epoch = 0
+
+    # Load from checkpoint if provided
+    if resume_from_checkpoint is not None:
+        checkpoint_path = resume_from_checkpoint
+        
+        # Check if this is a local path or needs the full path
+        if not os.path.exists(checkpoint_path):
+            # Try with ckpts folder
+            checkpoint_path = f"./ckpts/{checkpoint_path}"
+        
+        if os.path.exists(checkpoint_path):
+            logging.info(f"Rank {rank}: Loading checkpoint from {checkpoint_path}")
+            
+            # Load the checkpoint on CPU to avoid GPU memory issues
+            checkpoint = torch.load(checkpoint_path, map_location='cpu')
+            
+            # Get the model state dict and convert to normal module format (remove 'module.' prefix)
+            checkpoint_model_state_dict = checkpoint['model_state_dict']
+            model_state_dict = {}
+            
+            # For DDP checkpoints, need to remove 'module.' prefix
+            for key, value in checkpoint_model_state_dict.items():
+                if key.startswith('module.'):
+                    model_state_dict[key[7:]] = value
+                else:
+                    model_state_dict[key] = value
+            
+            # Load model state
+            model.load_state_dict(model_state_dict)
+            logging.info(f"Rank {rank}: Model state loaded successfully")
+            
+            # Load optimizer state if provided
+            if 'optimizer_state_dict' in checkpoint:
+                opt.load_state_dict(checkpoint['optimizer_state_dict'])
+                logging.info(f"Rank {rank}: Optimizer state loaded successfully")
+            
+            # Get starting epoch
+            if 'epoch' in checkpoint:
+                start_epoch = checkpoint['epoch'] + 1  # Start from next epoch
+                
+                # Calculate batch_id based on epoch
+                # This is an approximation - may need adjustment
+                approx_batches_per_epoch = len(dataset.train_dataset) // (local_batch_size * world_size)
+                batch_id = start_epoch * approx_batches_per_epoch
+                
+                logging.info(f"Rank {rank}: Resuming from epoch {start_epoch} (batch_id {batch_id})")
+            else:
+                logging.warning(f"Rank {rank}: No epoch information found in checkpoint")
+        else:
+            logging.error(f"Rank {rank}: Checkpoint file not found at {checkpoint_path}")
+
+    # Wrap model in DDP after loading checkpoint
+    model = DDP(model, device_ids=[rank], broadcast_buffers=False)
+
+    # date_str = date.today().strftime("%Y-%m-%d")
+    date_str = time.strftime("%Y-%m-%d_%H-%M-%S")
     model_subfolder = f"{dataset_name}-l{max_sequence_length}"
-    model_desc = (
-        f"{model_subfolder}"
-        + f"/{model_debug_str}_{interaction_module_debug_str}_{sampling_debug_str}_{loss_debug_str}"
-        + f"{f'-ddp{world_size}' if world_size > 1 else ''}-b{local_batch_size}-lr{learning_rate}-wu{num_warmup_steps}-wd{weight_decay}{'' if enable_tf32 else '-notf32'}-{date_str}"
-    )
-    if full_eval_every_n > 1:
-        model_desc += f"-fe{full_eval_every_n}"
-    if positional_sampling_ratio is not None and positional_sampling_ratio < 1:
-        model_desc += f"-d{positional_sampling_ratio}"
+    # model_desc = (
+    #     f"{model_subfolder}"
+    #     + f"/{model_debug_str}_{interaction_module_debug_str}_{sampling_debug_str}_{loss_debug_str}"
+    #     + f"{f'-ddp{world_size}' if world_size > 1 else ''}-b{local_batch_size}-lr{learning_rate}-wu{num_warmup_steps}-wd{weight_decay}{'' if enable_tf32 else '-notf32'}-{date_str}"
+    # )
+    model_desc = f"{model_subfolder}/ckpt"
+    # if full_eval_every_n > 1:
+    #     model_desc += f"-fe{full_eval_every_n}"
+    # if positional_sampling_ratio is not None and positional_sampling_ratio < 1:
+    #     model_desc += f"-d{positional_sampling_ratio}"
     # creates subfolders.
     os.makedirs(f"./exps/{model_subfolder}", exist_ok=True)
     os.makedirs(f"./ckpts/{model_subfolder}", exist_ok=True)
@@ -302,8 +363,8 @@ def train_fn(
     torch.autograd.set_detect_anomaly(True)
 
     batch_id = 0
-    epoch = 0
-    for epoch in range(num_epochs):
+    epoch = start_epoch - 1
+    for epoch in range(start_epoch, num_epochs):
         if train_data_sampler is not None:
             train_data_sampler.set_epoch(epoch)
         if eval_data_sampler is not None:
@@ -473,7 +534,8 @@ def train_fn(
                 eval_dict_all[k] = eval_dict_all[k] + [v]
             del eval_dict
 
-            if (eval_iter + 1 >= partial_eval_num_iters) and (not is_full_eval(epoch)):
+            if (eval_iter + 1 >= partial_eval_num_iters) and (not is_full_eval(epoch)) and (epoch != num_epochs - 1):
+            # if (eval_iter + 1 >= partial_eval_num_iters) and epoch < 50:
                 logging.info(
                     f"Truncating epoch {epoch} eval to {eval_iter + 1} iters to save cost.."
                 )
@@ -485,8 +547,11 @@ def train_fn(
 
         ndcg_10 = _avg(eval_dict_all["ndcg@10"], world_size=world_size)
         ndcg_50 = _avg(eval_dict_all["ndcg@50"], world_size=world_size)
+        ndcg_100 = _avg(eval_dict_all["ndcg@100"], world_size=world_size)
+        hr_1 = _avg(eval_dict_all["hr@1"], world_size=world_size)
         hr_10 = _avg(eval_dict_all["hr@10"], world_size=world_size)
         hr_50 = _avg(eval_dict_all["hr@50"], world_size=world_size)
+        hr_100 = _avg(eval_dict_all["hr@100"], world_size=world_size)
         mrr = _avg(eval_dict_all["mrr"], world_size=world_size)
 
         add_to_summary_writer(
@@ -505,6 +570,9 @@ def train_fn(
                 world_size=world_size,
             )
         if rank == 0 and epoch > 0 and (epoch % save_ckpt_every_n) == 0:
+
+            logging.info(f"Saving checkpoint at epoch {epoch} to: './ckpts/{model_desc}_ep{epoch}'")
+
             torch.save(
                 {
                     "epoch": epoch,
@@ -516,14 +584,83 @@ def train_fn(
 
         logging.info(
             f"rank {rank}: eval @ epoch {epoch} in {time.time() - eval_start_time:.2f}s: "
-            f"NDCG@10 {ndcg_10:.4f}, NDCG@50 {ndcg_50:.4f}, HR@10 {hr_10:.4f}, HR@50 {hr_50:.4f}, MRR {mrr:.4f}"
+            f"NDCG@10 {ndcg_10:.4f}, NDCG@50 {ndcg_50:.4f}, NDCG@100 {ndcg_100:.4f}, HR@1 {hr_1:.4f}, HR@10 {hr_10:.4f}, HR@50 {hr_50:.4f}, HR@100 {hr_100:.4f}, MRR {mrr:.4f}"
         )
         last_training_time = time.time()
+    
+
+    # final evaluation
+    if eval_data_sampler is not None:
+        eval_data_sampler.set_epoch(epoch)
+    eval_dict_all = None
+    eval_start_time = time.time()
+    model.eval()
+    eval_state = get_eval_state(
+        model=model.module,
+        all_item_ids=dataset.all_item_ids,
+        negatives_sampler=negatives_sampler,
+        top_k_module_fn=lambda item_embeddings, item_ids: get_top_k_module(
+            top_k_method=top_k_method,
+            model=model.module,
+            item_embeddings=item_embeddings,
+            item_ids=item_ids,
+        ),
+        device=device,
+        float_dtype=torch.bfloat16 if main_module_bf16 else None,
+    )
+    for eval_iter, row in enumerate(iter(eval_data_loader)):
+        seq_features, target_ids, target_ratings = movielens_seq_features_from_row(
+            row, device=device, max_output_length=gr_output_length + 1
+        )
+        eval_dict = eval_metrics_v2_from_tensors(
+            eval_state,
+            model.module,
+            seq_features,
+            target_ids=target_ids,
+            target_ratings=target_ratings,
+            user_max_batch_size=eval_user_max_batch_size,
+            dtype=torch.bfloat16 if main_module_bf16 else None,
+        )
+
+        if eval_dict_all is None:
+            eval_dict_all = {}
+            for k, v in eval_dict.items():
+                eval_dict_all[k] = []
+
+        for k, v in eval_dict.items():
+            eval_dict_all[k] = eval_dict_all[k] + [v]
+        del eval_dict
+
+    assert eval_dict_all is not None
+    for k, v in eval_dict_all.items():
+        eval_dict_all[k] = torch.cat(v, dim=-1)
+
+    ndcg_10 = _avg(eval_dict_all["ndcg@10"], world_size=world_size)
+    ndcg_50 = _avg(eval_dict_all["ndcg@50"], world_size=world_size)
+    hr_10 = _avg(eval_dict_all["hr@10"], world_size=world_size)
+    hr_50 = _avg(eval_dict_all["hr@50"], world_size=world_size)
+    mrr = _avg(eval_dict_all["mrr"], world_size=world_size)
+
+    add_to_summary_writer(
+        writer,
+        batch_id=epoch,
+        metrics=eval_dict_all,
+        prefix="eval_epoch",
+        world_size=world_size,
+    )
+    
+    logging.info(
+        f"rank {rank}: **FINAL** eval @ epoch {epoch} in {time.time() - eval_start_time:.2f}s: "
+        f"NDCG@10 {ndcg_10:.4f}, NDCG@50 {ndcg_50:.4f}, NDCG@100 {ndcg_100:.4f}, HR@1 {hr_1:.4f}, HR@10 {hr_10:.4f}, HR@50 {hr_50:.4f}, HR@100 {hr_100:.4f}, MRR {mrr:.4f}"
+    )
+    
 
     if rank == 0:
         if writer is not None:
             writer.flush()
             writer.close()
+        
+        logging.info(f"Saving checkpoint at epoch {epoch} to: './ckpts/{model_desc}_ep{epoch}'")
 
         torch.save(
             {
@@ -535,3 +672,29 @@ def train_fn(
         )
 
     cleanup()
+
+def load_checkpoint(checkpoint_path, model, optimizer=None, device=None):
+    """
+    Load model and optimizer state from a checkpoint.
+    """
+    logging.info(f"Loading checkpoint from: {checkpoint_path}")
+    
+    # Load the checkpoint on CPU to avoid GPU memory issues
+    checkpoint = torch.load(checkpoint_path, map_location='cpu')
+    
+    # Load model state
+    model.load_state_dict(checkpoint['model_state_dict'])
+    
+    # Move model to device if specified
+    if device is not None:
+        model = model.to(device)
+    
+    # Load optimizer state if provided
+    if optimizer is not None and 'optimizer_state_dict' in checkpoint:
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    
+    # Return the epoch from the checkpoint
+    epoch = checkpoint.get('epoch', 0)
+    logging.info(f"Loaded checkpoint from epoch {epoch}")
+    
+    return model, optimizer, epoch
