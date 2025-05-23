@@ -5,7 +5,7 @@
 
 <h4 align="center">
     <p>
-        <a href="https://www.open-reco-bench.ai/leaderboard">ORBIT Benchmark</a> |
+        <a href="https://www.open-reco-bench.ai">ORBIT Benchmark</a> |
         <a href="https://huggingface.co/datasets/cx-cmu/ClueWeb-Reco">ClueWeb-Reco Dataset</a> |
         <a href="https://www.open-reco-bench.ai/leaderboard">Leaderboard</a> 
     <p>
@@ -13,12 +13,18 @@
 
 
 
-## Table of Contents
+<!-- -------------------------- -->
+<!-- -------------------------- -->
 
-- [Setup](#setup)
+# Table of Contents
+
 - [Public Benchmark](#public-benchmark)
+    - [Recbole Setup](#recbole-setup)
     - [Public Datasets Preparation](#public-datasets-preparation)
+        - [Raw data processing](#raw-data-processing)
+        - [Export benchmark data splits](#export-benchmark-data-splits)
     - [Recbole-Supported Experiments](#recbole-supported-experiments)
+    - [HSTU](#hstu)
     - [TASTE](#taste)
         - [TASTE Data Processing](#taste-data-processing)
         - [TASTE Experiments](#taste-experiments)
@@ -31,13 +37,14 @@
 
 
 
-## ClueWeb-Reco Benchmark Submission and Evaluation 
-
 
 <!-- -------------------------- -->
 <!-- -------------------------- -->
-## Setup 
+# Public Benchmark
 
+
+<!-- -------------------------- -->
+## Recbole Setup 
 
 Install RecBole as per RecBole README: 
 
@@ -45,22 +52,26 @@ Install RecBole as per RecBole README:
     pip install -e . --verbose 
 
 
-
 <!-- -------------------------- -->
-<!-- -------------------------- -->
-## Public Benchmark
+## Public Datasets Preparation 
 
-
-<!-- -------------------------- -->
-### Public Datasets Preparation 
+### Raw Data Processing 
 We format public datasets into interactions, user-data, item-data. 
 We use [RecSysDatasets - Conversion Tools](https://github.com/RUCAIBox/RecSysDatasets/tree/master/conversion_tools) over this pre-processing step. 
 
 While the item data processing part of the conversion tool do not work for AmazonReview 2023 datasets at the time we perform our experiements, we include a script that align the downloaded raw item data with the interactions exported by this conversion tool: `TASTE/reproduce/dataprocess/gen_item_column.sh`.   
 
+<!-- -------------------------- -->
+### Export Benchmark Data Splits
+You can run the following script to export ORBIT's train, validation, and test splits. 
+
+    cd RecSys-Benchmark/RecBole
+    sbatch scripts/run_export_data_splits.sh
+
+*Note*: Remember to update the dataset you want to process in the scripts and associated paths. The model config is a placeholder we use to adapt the benchmark data split exports in Recbole pipeline. 
 
 <!-- -------------------------- -->
-### Recbole-Supported Experiments 
+## Recbole-Supported Experiments 
 
 
 We use [Recbole](https://github.com/RUCAIBox/RecBole) implementation of the following models. The configurations files we use over different models and datasets can be found under folder `Recbole/configs`. For more information and usage of custom configurations, please refer to the official [Recbole repository](https://github.com/RUCAIBox/RecBole).  
@@ -76,11 +87,22 @@ For example:
 *Note*: Remember to update the dataset you want to process in the scripts and associated paths.  
 
 
-### TASTE 
+<!-- -------------------------- -->
+<!-- -------------------------- -->
+## HSTU 
+
+We follow the [HSTU official repository]([https://github.com/bytedance/HLLM](https://github.com/meta-recsys/generative-recommenders) to perform HSTU experiments.
+
+Please follow the instruction in [HSTU/reproduce](https://github.com/cxcscmu/RecSys-Benchmark/tree/main/HSTU/reproduce) for experiment reproduction.  
+
+
+<!-- -------------------------- -->
+<!-- -------------------------- -->
+## TASTE 
 
 We follow the [TASTE official opensource](https://github.com/OpenMatch/TASTE) to perform TASTE experiments. Please follow their official opensource for environment setup. 
 
-#### TASTE Data processing 
+### TASTE Data processing 
 
 We adapt the TASTE official data processing pipeline by running the following scripts. These scripts are adapted from the [TASTE official opensource](https://github.com/OpenMatch/TASTE). 
 
@@ -99,7 +121,8 @@ Thirdly, generate training and evalution features:
 *Note*: Remember to update the dataset you want to process in the scripts and associated paths.  
 
 
-#### TASTE Experiments 
+<!-- -------------------------- -->
+### TASTE Experiments 
 
 The training scripts of TASTE experiments are in `TASTE/reproduce/train`. 
 The testing scripts of TASTE experiments are in `TASTE/reproduce/test`. We use the lowest evaluation loss checkpoint to quickly perform testing.  
@@ -114,10 +137,13 @@ For example, to train and test TASTE on `ml-1m` dataset:
 *Note*: Remember to update associated paths in these scripts.  
 
 
-### HLLM
+<!-- -------------------------- -->
+<!-- -------------------------- -->
+## HLLM
 We follow the HLLM official repository to perform HLLM experiments. Please see the [HLLM official repository](https://github.com/bytedance/HLLM) for more details.
 
-#### Environment Setup
+<!-- -------------------------- -->
+### Environment Setup
 To avoid package conflicts, create a virtual environment and install dependencies from our adapted requirements.txt:
 ```bash
 python -m venv hllm_env
@@ -125,7 +151,8 @@ source hllm_env/bin/activate
 pip install -r requirements.txt
 ```
 
-#### Experiments
+<!-- -------------------------- -->
+### Experiments
 We provide scripts to reproduce our experiments across all datasets in the `reproduce/` folder. Our scripts are adapted from the HLLM official repository with additional support for checkpointing, loading, multinode training, and tailored to our datasets.
 
 Run experiments on different datasets using:
@@ -148,11 +175,11 @@ Note: Remember to update dataset paths and model directories in these scripts an
 
 <!-- -------------------------- -->
 <!-- -------------------------- -->
-## ClueWeb-Reco Benchmark
+# ClueWeb-Reco Benchmark
 
 
 <!-- -------------------------- -->
-### ClueWeb-Reco Dataset
+## ClueWeb-Reco Dataset
 
 You can find [ClueWeb-Reco on Huggingface](https://huggingface.co/datasets/cx-cmu/ClueWeb-Reco). 
 
@@ -187,7 +214,7 @@ The ClueWeb-Reco dataset is structured as the following:
 
 
 <!-- -------------------------- -->
-### ClueWeb-Reco Benchmark Submission and Evaluation 
+## ClueWeb-Reco Benchmark Submission and Evaluation 
 
 Your submitted prediction should be a binary file of the following format. Please make sure the submitted prediction binary files contain the ClueWeb internal IDs (0-indexing integer) instead of the official ClueWeb ids. 
 
