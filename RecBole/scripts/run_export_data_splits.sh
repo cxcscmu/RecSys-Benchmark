@@ -14,9 +14,6 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user="jingyuah@cs.cmu.edu"
 
-eval "$(conda shell.bash hook)"
-conda activate recsys_ben
-
 model="NeuMF"
 dataset_type="ml"
 dataset="ml-1m"
@@ -30,8 +27,10 @@ data_config="${source_dir}/configs/datasets/${dataset_type}.yaml"
 eval_config="${source_dir}/configs/eval.yaml"
 output_dir="benchmark_splits/${dataset}" 
 
-python export_data_split.py \
+cd ..
+
+python3 export_data_splits.py \
     --model "$model" \
     --dataset_name "$dataset" \
     --output_dir "$output_dir" \
-    --config_file_list "${data_config} ${eval_config}" \
+    --config_file_list ${data_config} ${eval_config}
