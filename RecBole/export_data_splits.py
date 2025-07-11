@@ -163,10 +163,19 @@ def export_dataset_raw_format(model, dataset_name, output_dir, config_file_list=
     print("All files exported.")
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--model', type=str, required=True, help='Model name (e.g. NeuMF)')
+    parser.add_argument('--dataset_name', type=str, required=True, help='Dataset name (e.g. ml-1m)')
+    parser.add_argument('--output_dir', type=str, required=True, help='Directory to save output files')
+    parser.add_argument('--config_file_list', nargs='+', required=True, help='List of config file paths')
+
+    args = parser.parse_args()
+
     export_dataset_raw_format(
-        model='NeuMF',
-        dataset_name='amzn-toys',
-        output_dir='output/amzn-toys',
-        config_file_list=['config_amzn.yaml']
+        model=args.model,
+        dataset_name=args.dataset_name,
+        output_dir=args.output_dir,
+        config_file_list=args.config_file_list
     )
 
