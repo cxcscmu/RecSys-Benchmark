@@ -1,0 +1,22 @@
+model_type: sequential
+hidden_size: 64
+n_layers: 2
+n_heads: 2
+hidden_act: gelu
+layer_norm_eps: 1e-12
+initializer_range: 0.02
+pooling_mode: mean
+loss_type: CE
+train_neg_sample_args: null
+epochs: 50
+train_batch_size: 512
+eval_batch_size: 256
+learning_rate: 0.001
+eval_args:
+  split:
+    RS: [0.8, 0.1, 0.1]
+  order: TO
+eval_step: 1
+metrics: ["Recall", "MRR", "NDCG", "Hit", "Precision"]
+topk: [1, 10, 50, 100]
+log_wandb: true
