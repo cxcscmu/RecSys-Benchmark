@@ -23,8 +23,8 @@ item_attribute: categories
 # Model
 #pre_model_path: /data/group_data/cx_group/REC/checkpoints/s3rec_amzn-sports/S3Rec-amzn-sports-1.pth
 model: S3Rec
-n_heads: 4 
-n_layers: 4 
+n_heads: 2 
+n_layers: 2 
 hidden_size: 64
 inner_size: 64
 hidden_act: gelu
