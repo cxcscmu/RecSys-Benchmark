@@ -66,7 +66,7 @@ While the item data processing part of the conversion tool do not work for Amazo
 ### Export Benchmark Data Splits
 You can run the following script to export ORBIT's train, validation, and test splits.
 
-    cd RecSys-Benchmark/RecBole
+    <!-- cd RecSys-Benchmark/RecBole -->
     sbatch scripts/run_export_data_splits.sh
 
 *Note*: Remember to update the dataset you want to process in the scripts and associated paths. The model config is a placeholder we use to adapt the benchmark data split exports in Recbole pipeline.

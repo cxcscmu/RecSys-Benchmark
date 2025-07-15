@@ -1,0 +1,19 @@
+model_type: sequential
+model: GRU4Rec
+embedding_size: 64
+hidden_size: 100
+dropout_prob: 0.25
+loss_type: CE
+train_neg_sample_args: null
+epochs: 100
+train_batch_size: 512
+eval_batch_size: 256
+learning_rate: 0.001
+eval_args:
+  split:
+    RS: [0.8, 0.1, 0.1]
+  order: TO
+  mode: full
+metrics: ["Recall", "MRR", "NDCG", "Hit", "Precision"]
+topk: [1, 10, 50, 100]
+log_wandb: True
