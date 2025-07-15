@@ -30,5 +30,5 @@ python3 main.py \
   --text_path /home/voberoi/HLLM/information \
   --gradient_checkpointing True \
   --stage 3 \
-  --epochs 1 \
+  --epochs 5 \
   --model_file ../checkpoints/ml1m_run/HLLM-0.pth 
