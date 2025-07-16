@@ -27,10 +27,10 @@ from torch_geometric.utils import degree
 class Data:
     def __init__(self, config):
         self.config = config
-        self.dataset_path = config['data_path'] # /data/group_data/cx_group/REC/data/HLLM 
-        self.dataset_name = config['dataset'] # amzn-books
+        self.dataset_path = config['data_path']
+        self.dataset_name = config['dataset']
         self.data_split = config['data_split']
-        self.item_data = config['item_data'] # amzn-books/item_details
+        self.item_data = config['item_data']
         self.logger = getLogger()
         # self._from_scratch()
 
@@ -103,6 +103,7 @@ class Data:
 
     def _load_pre_split_data(self):
         """
+        Load data from pre-split files (train/valid/test) in a way that's compatible with HLLM pipeline
         """
         self.logger.info(set_color(f'Loading pre-split data for {self.dataset_name}.', 'green'))
         
@@ -128,8 +129,8 @@ class Data:
         )
         self.logger.info(f'Test interactions loaded successfully from [{test_path}].')
         print(f' the length of training data is {len(train_data)}')
-        print(f' the length of valid data is {len(valid_data)}')
-        print(f' the length of test data is {len(test_data)}')
+        print(f' the length of training data is {len(valid_data)}')
+        print(f' the length of training data is {len(test_data)}')
         
         # Load item details if needed - use same format as expected in original code
         if os.path.exists(item_details_path):
@@ -157,15 +158,13 @@ class Data:
         test_data['user_id'] = test_data['user_id'].map(self.token2id['user_id'])
         test_data['item_id'] = test_data['item_id'].map(self.token2id['item_id'])
         
-        # Sort train data by timestamp
+        # Sort train data by timestamp (as done in the normal build method)
         train_data.sort_values(by='timestamp', ascending=True, inplace=True)
         
-
-        all_sorted = self.inter_feat.sort_values(by=['user_id', 'timestamp'])
-        user_list  = all_sorted['user_id'].values
-        item_list  = all_sorted['item_id'].values
-        timestamp_list = all_sorted['timestamp'].values
-
+        # Build user sequences exactly as in the original build method
+        user_list = train_data['user_id'].values
+        item_list = train_data['item_id'].values
+        timestamp_list = train_data['timestamp'].values
         grouped_index = self._grouped_index(user_list)
         
         user_seq = {}
@@ -177,10 +176,16 @@ class Data:
         self.user_seq = user_seq
         self.time_seq = time_seq
         
-
-        train_sorted = train_data.sort_values(by=['user_id', 'timestamp'])
-        train_feat   = {k: train_sorted[k].values for k in train_sorted.columns}
+       
+        train_feat = dict()
+        indices = []
+        for index in grouped_index.values():
+            indices.extend(list(index))
         
+        for k in train_data.columns:
+            train_feat[k] = train_data[k].values[indices]
+        
+        # Apply the same sequence building logic based on model type
         if self.config['MODEL_INPUT_TYPE'] == InputType.AUGSEQ:
             train_feat = self._build_aug_seq(train_feat)
         elif self.config['MODEL_INPUT_TYPE'] == InputType.SEQ:
@@ -188,6 +193,7 @@ class Data:
         
         self.train_feat = train_feat
         
+        # Create validation and test data dictionaries in the same format as expected by the model
         self.valid_data = {}
         grouped_valid = valid_data.groupby('user_id')
         for uid, group in grouped_valid:

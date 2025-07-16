@@ -1,5 +1,5 @@
 
-# split 
+# split
 eval_args:
   split: { 'LS': 'valid_and_test' }
   group_by: user
@@ -14,3 +14,7 @@ valid_metric_bigger: True
 eval_batch_size: 1024
 loss_decimal_place: 4
 metric_decimal_place: 4
+
+# model checkpoint and log config
+checkpoint_dir: checkpoints
+wandb_project: RecSys-Benchmark
