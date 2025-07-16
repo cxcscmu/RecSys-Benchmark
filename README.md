@@ -66,7 +66,7 @@ While the item data processing part of the conversion tool do not work for Amazo
 ### Export Benchmark Data Splits
 You can run the following script to export ORBIT's train, validation, and test splits.
 
-    <!-- cd RecSys-Benchmark/RecBole -->
+<!-- cd RecSys-Benchmark/RecBole -->
     sbatch scripts/run_export_data_splits.sh
 
 *Note*: Remember to update the dataset you want to process in the scripts and associated paths. The model config is a placeholder we use to adapt the benchmark data split exports in Recbole pipeline.
@@ -85,8 +85,12 @@ For example:
     cd RecSys-Benchmark/RecBole
     sbatch scripts/run_SASRec.sh
 
-*Note*: Remember to update the dataset you want to process in the scripts and associated paths.
-
+*Note*:
+- Remember to update the dataset you want to process in the scripts and associated paths in the dataset config yaml under `RecSys-Benchmark/RecBole/configs/datasets`.
+- Remember to update the checkpoint directory and wandb project name in the general config yaml under `RecSys-Benchmark/RecBole/configs/eval.yaml`.
+- To reproduce experiments on certain GPU device, use argument `gpu_id="0,1"` in the config yaml.
+- To resume experiments from a checkpoint, use argument `resume_path="checkpoint_file_path"` in the config yaml.
+- The model architecture we use can vary between MovieLens and AmazonReview datasets. Check the model config yaml under `RecSys-Benchmark/RecBole/configs/models` for more details.
 
 <!-- -------------------------- -->
 <!-- -------------------------- -->

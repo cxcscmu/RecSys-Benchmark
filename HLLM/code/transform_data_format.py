@@ -40,21 +40,11 @@ source_path = os.path.join(args.source_dir, "item")
 target_path = os.path.join(args.target_dir, "item_details.csv")
 # read df and transform
 df = pd.read_csv(source_path, sep="\t")
-df = df[col_map.keys()]
-df = df.rename(columns=col_map)
-df.to_csv(target_path, sep=",", index=False)
-print(f"transformed {source_path} to {target_path}")
-
-# user datas
-source_path = os.path.join(args.source_dir, "item")
-target_path = os.path.join(args.target_dir, "item_details.csv")
-# read df and transform
-df = pd.read_csv(source_path, sep="\t")
 # construct the item column map
 item_cols = df.columns.tolist()
 item_col_map = {}
 for item in item_cols:
     item_col_map[item] = item.split(":")[0]
-df = df.rename(columns=col_map)
+df = df.rename(columns=item_col_map)
 df.to_csv(target_path, sep=",", index=False)
 print(f"transformed {source_path} to {target_path}")

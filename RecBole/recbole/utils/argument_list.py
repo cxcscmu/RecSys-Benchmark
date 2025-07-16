@@ -18,6 +18,7 @@ general_arguments = [
     'save_dataloaders',
     'dataloaders_save_path',
     'log_wandb',
+    'resume_path',
 ]
 
 training_arguments = [

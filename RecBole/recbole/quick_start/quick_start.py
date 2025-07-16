@@ -13,33 +13,31 @@ recbole.quick_start
 """
 import logging
 import sys
-import torch.distributed as dist
 from collections.abc import MutableMapping
 from logging import getLogger
+
+import torch.distributed as dist
 
 from ray import tune
 
 from recbole.config import Config
-from recbole.data import (
-    create_dataset,
-    data_preparation,
-)
+from recbole.data import create_dataset, data_preparation
 from recbole.data.transform import construct_transform
 from recbole.utils import (
-    init_logger,
+    get_environment,
+    get_flops,
     get_model,
     get_trainer,
+    init_logger,
     init_seed,
     set_color,
-    get_flops,
-    get_environment,
 )
 
 
 def run(
     model,
     dataset,
-    exp_name, 
+    exp_name,
     config_file_list=None,
     config_dict=None,
     saved=True,
@@ -53,7 +51,7 @@ def run(
         res = run_recbole(
             model=model,
             dataset=dataset,
-            exp_name=exp_name, 
+            exp_name=exp_name,
             config_file_list=config_file_list,
             config_dict=config_dict,
             saved=saved,
@@ -97,7 +95,7 @@ def run(
 def run_recbole(
     model=None,
     dataset=None,
-    exp_name=None, 
+    exp_name=None,
     config_file_list=None,
     config_dict=None,
     saved=True,
@@ -118,7 +116,7 @@ def run_recbole(
     config = Config(
         model=model,
         dataset=dataset,
-        exp_name=exp_name, 
+        exp_name=exp_name,
         config_file_list=config_file_list,
         config_dict=config_dict,
     )
@@ -147,6 +145,10 @@ def run_recbole(
 
     # trainer loading and initialization
     trainer = get_trainer(config["MODEL_TYPE"], config["model"])(config, model)
+
+    if config["resume_path"]:
+        logger.info(f"Loading model checkpoint from {config['resume_path']}")
+        trainer.resume_checkpoint(config["resume_path"])
 
     # model training
     best_valid_score, best_valid_result = trainer.fit(
