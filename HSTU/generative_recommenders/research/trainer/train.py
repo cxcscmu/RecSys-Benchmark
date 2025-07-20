@@ -637,8 +637,11 @@ def train_fn(
 
     ndcg_10 = _avg(eval_dict_all["ndcg@10"], world_size=world_size)
     ndcg_50 = _avg(eval_dict_all["ndcg@50"], world_size=world_size)
+    ndcg_100 = _avg(eval_dict_all["ndcg@100"], world_size=world_size)
     hr_10 = _avg(eval_dict_all["hr@10"], world_size=world_size)
+    hr_1  = _avg(eval_dict_all["hr@1"], world_size=world_size)
     hr_50 = _avg(eval_dict_all["hr@50"], world_size=world_size)
+    hr_100 = _avg(eval_dict_all["hr@100"], world_size=world_size)
     mrr = _avg(eval_dict_all["mrr"], world_size=world_size)
 
     add_to_summary_writer(
