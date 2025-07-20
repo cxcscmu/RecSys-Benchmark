@@ -16,12 +16,12 @@ loss_type: CE
 train_neg_sample_args:
 stopping_step: 10 # default 10 for ml, 50 for others 
 eval_step: 5
-threshold: {'rating': 3}
-normalize_field: ~
-normalize_all: True
-clip_grad_norm:
-  max_norm: 1.0  # Specify the gradient clipping max norm
-  norm_type: 2   # Optional, defaults to L2 norm
+# threshold: {'rating': 3}
+# normalize_field: ~
+# normalize_all: True
+# clip_grad_norm:
+#   max_norm: 1.0  # Specify the gradient clipping max norm
+#   norm_type: 2   # Optional, defaults to L2 norm
 
 # Model 
 model: DCN
@@ -30,5 +30,4 @@ mlp_hidden_size: [1024, 1024]     # (list of int) The hidden size of MLP layers.
 cross_layer_num: 6                # (int) The number of cross layers. 
 reg_weight: 2                     # (int) The L2 regularization weight.
 dropout_prob: 0.3                 # (float) The dropout rate.
-LABEL_FIELD: rating
-
+# LABEL_FIELD: rating
