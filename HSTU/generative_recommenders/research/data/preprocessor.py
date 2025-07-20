@@ -152,27 +152,27 @@ class MovielensDataProcessor(DataProcessor):
 
         if self._prefix == "ml-1m":
             users = pd.read_csv(
-                f"tmp/{self._prefix}/users.dat",
+                f"../tmp/{self._prefix}/users.dat",
                 sep="::",
                 names=["user_id", "sex", "age_group", "occupation", "zip_code"],
             )
             train_ratings = pd.read_csv(
-                f"tmp/{self._prefix}/train_ratings.dat",
+                f"../tmp/{self._prefix}/train_ratings.dat",
                 sep="::",
                 names=["user_id", "movie_id", "rating", "unix_timestamp"],
             )
             valid_ratings = pd.read_csv(
-                f"tmp/{self._prefix}/valid_ratings.dat",
+                f"../tmp/{self._prefix}/valid_ratings.dat",
                 sep="::",
                 names=["user_id", "movie_id", "rating", "unix_timestamp"],
             )
             test_ratings = pd.read_csv(
-                f"tmp/{self._prefix}/test_ratings.dat",
+                f"../tmp/{self._prefix}/test_ratings.dat",
                 sep="::",
                 names=["user_id", "movie_id", "rating", "unix_timestamp"],
             )
             movies = pd.read_csv(
-                f"tmp/{self._prefix}/movies.dat",
+                f"../tmp/{self._prefix}/movies.dat",
                 sep="::",
                 names=["movie_id", "title", "genres"],
                 encoding="iso-8859-1",
@@ -183,7 +183,7 @@ class MovielensDataProcessor(DataProcessor):
         #     users = None
         #     # ratings: userId,movieId,rating,timestamp
         #     ratings = pd.read_csv(
-        #         f"tmp/{self._prefix}/ratings.csv",
+        #         f"../tmp/{self._prefix}/ratings.csv",
         #         sep=",",
         #     )
         #     ratings.rename(
@@ -198,7 +198,7 @@ class MovielensDataProcessor(DataProcessor):
         #     # 1,Toy Story (1995),Adventure|Animation|Children|Comedy|Fantasy
         #     # 2,Jumanji (1995),Adventure|Children|Fantasy
         #     movies = pd.read_csv(
-        #         f"tmp/{self._prefix}/movies.csv",
+        #         f"../tmp/{self._prefix}/movies.csv",
         #         sep=",",
         #         encoding="iso-8859-1",
         #     )
@@ -209,7 +209,7 @@ class MovielensDataProcessor(DataProcessor):
         #     user_ids = []
         #     movie_ids = []
         #     for i in range(16):
-        #         train_file = f"tmp/{self._prefix}/trainx16x32_{i}.npz"
+        #         train_file = f"../tmp/{self._prefix}/trainx16x32_{i}.npz"
         #         with np.load(train_file) as data:
         #             user_ids.extend([x[0] for x in data["arr_0"]])
         #             movie_ids.extend([x[1] for x in data["arr_0"]])
@@ -272,15 +272,15 @@ class MovielensDataProcessor(DataProcessor):
             )
 
         # Save primary csv's
-        if not os.path.exists(f"tmp/processed/{self._prefix}"):
-            os.makedirs(f"tmp/processed/{self._prefix}")
+        if not os.path.exists(f"../tmp/processed/{self._prefix}"):
+            os.makedirs(f"../tmp/processed/{self._prefix}")
         if users is not None:
-            users.to_csv(f"tmp/processed/{self._prefix}/users.csv", index=False)
+            users.to_csv(f"../tmp/processed/{self._prefix}/users.csv", index=False)
         if movies is not None:
-            movies.to_csv(f"tmp/processed/{self._prefix}/movies.csv", index=False)
-        train_ratings.to_csv(f"tmp/processed/{self._prefix}/train_ratings.csv", index=False)
-        valid_ratings.to_csv(f"tmp/processed/{self._prefix}/valid_ratings.csv", index=False)
-        test_ratings.to_csv(f"tmp/processed/{self._prefix}/test_ratings.csv", index=False)
+            movies.to_csv(f"../tmp/processed/{self._prefix}/movies.csv", index=False)
+        train_ratings.to_csv(f"../tmp/processed/{self._prefix}/train_ratings.csv", index=False)
+        valid_ratings.to_csv(f"../tmp/processed/{self._prefix}/valid_ratings.csv", index=False)
+        test_ratings.to_csv(f"../tmp/processed/{self._prefix}/test_ratings.csv", index=False)
 
         num_unique_items_train = len(set(train_ratings["movie_id"].values))
 
@@ -487,19 +487,19 @@ class AmazonDataProcessor(DataProcessor):
         self.download()
 
         train_ratings = pd.read_csv(
-            f"tmp/{self._prefix}/train_ratings.csv",
+            f"../tmp/{self._prefix}/train_ratings.csv",
             sep=",",
             names=["user_id", "item_id", "rating", "timestamp"],
         )
 
         valid_ratings = pd.read_csv(
-            f"tmp/{self._prefix}/valid_ratings.csv",
+            f"../tmp/{self._prefix}/valid_ratings.csv",
             sep=",",
             names=["user_id", "item_id", "rating", "timestamp"],
         )
 
         test_ratings = pd.read_csv(
-            f"tmp/{self._prefix}/test_ratings.csv",
+            f"../tmp/{self._prefix}/test_ratings.csv",
             sep=",",
             names=["user_id", "item_id", "rating", "timestamp"],
         )
@@ -743,8 +743,8 @@ class AmazonDataProcessor(DataProcessor):
             else:
                 return seq_ratings_data.copy()
 
-        if not os.path.exists(f"tmp/{self._prefix}"):
-            os.makedirs(f"tmp/{self._prefix}")
+        if not os.path.exists(f"../tmp/{self._prefix}"):
+            os.makedirs(f"../tmp/{self._prefix}")
 
         # seq_ratings_data = self.to_seq_data(seq_ratings_data)
         # seq_ratings_data.sample(frac=1).reset_index().to_csv(
