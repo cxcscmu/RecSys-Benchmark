@@ -58,7 +58,7 @@ Install RecBole as per RecBole README:
 
 ### Raw Data Processing
 We format public datasets into interactions, user-data, item-data.
-We use [RecSysDatasets - Conversion Tools](https://github.com/RUCAIBox/RecSysDatasets/tree/master/conversion_tools) over this pre-processing step.
+We use [RecSysDatasets - Conversion Tools](https://github.com/RUCAIBox/RecSysDatasets/tree/master/conversion_tools) over this pre-processing step. We directly use the preprocessed versions given in their Google Drive. 
 
 While the item data processing part of the conversion tool do not work for AmazonReview 2023 datasets at the time we perform our experiements, we include a script that align the downloaded raw item data with the interactions exported by this conversion tool: `TASTE/reproduce/dataprocess/gen_item_column.sh`.
 
@@ -96,7 +96,7 @@ For example:
 <!-- -------------------------- -->
 ## HSTU
 
-We follow the [HSTU official repository]([https://github.com/bytedance/HLLM](https://github.com/meta-recsys/generative-recommenders) to perform HSTU experiments.
+We follow the [HSTU official repository](https://github.com/meta-recsys/generative-recommenders) to perform HSTU experiments.
 
 Please follow the instruction in [HSTU/reproduce](https://github.com/cxcscmu/RecSys-Benchmark/tree/main/HSTU/reproduce) for experiment reproduction.
 
