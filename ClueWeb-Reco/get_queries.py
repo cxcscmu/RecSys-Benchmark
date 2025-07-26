@@ -113,6 +113,31 @@ def query_gemini(prompt):
         print(f"Gemini error: {e}")
         return ""
 
+# ========== CLAUDE CLIENT ==========
+print("Reading Claude API key...")
+claude_key = os.getenv("CLAUDE_API_KEY")
+if not claude_key:
+    raise ValueError("Set your Claude API key using: export CLAUDE_API_KEY='your-key'")
+
+claude_client = anthropic.Anthropic(api_key=claude_key)
+print("Claude client initialized.")
+
+def query_claude(prompt):
+    try:
+        response = claude_client.messages.create(
+            model="claude-sonnet-4-20250514",  # Best Claude model available
+            max_tokens=100,
+            temperature=0.7,
+            system="You are a helpful assistant that writes concise search queries.",
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
+	)
+	return response.content[0].text.strip()
+    except Exception as e:
+        print(f"Claude error: {e}")
+        return ""
+
 # ========== MAIN GENERATION FUNCTION ==========
 def generate_queries_for_split(split_name, split_path):
     print(f"\nProcessing split: {split_name}")
