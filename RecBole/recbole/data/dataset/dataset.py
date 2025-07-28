@@ -483,14 +483,26 @@ class Dataset(torch.utils.data.Dataset):
             self.logger.warning(f"No columns has been loaded from [{source}]")
             return None
 
-        df = pd.read_csv(
-            filepath,
-            delimiter=field_separator,
-            usecols=usecols,
-            dtype=dtype,
-            encoding=encoding,
-            engine="python",
-        )
+        # quoting=3 for mind_small
+        if "mind" in self.dataset_name: 
+            df = pd.read_csv(
+                filepath,
+                delimiter=field_separator,
+                usecols=usecols,
+                dtype=dtype,
+                encoding=encoding,
+                engine="python",
+                quoting=3, 
+            )
+        else: 
+            df = pd.read_csv(
+                filepath,
+                delimiter=field_separator,
+                usecols=usecols,
+                dtype=dtype,
+                encoding=encoding,
+                engine="python",
+            )
         df.columns = columns
 
         seq_separator = self.config["seq_separator"]
@@ -2138,7 +2150,7 @@ class Dataset(torch.utils.data.Dataset):
                 if k in self.config["numerical_features"]:
                     new_data[k] = torch.FloatTensor(value.tolist())
                 else:
-                    new_data[k] = torch.FloatTensor(value)
+                    new_data[k] = torch.DoubleTensor(value) ### avoid timestamp conversion issue 
             elif ftype == FeatureType.TOKEN_SEQ:
                 seq_data = [torch.LongTensor(d[: self.field2seqlen[k]]) for d in value]
                 new_data[k] = rnn_utils.pad_sequence(seq_data, batch_first=True)

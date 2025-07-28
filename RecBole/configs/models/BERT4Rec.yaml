@@ -14,8 +14,9 @@ num_attention_heads: 2
 num_hidden_layers: 2
 optimizer: adam
 
+model: BERT4Rec
 epochs: 100
-train_batch_size: 1024
+train_batch_size: 8192
 learner: adam
 learning_rate: 0.001
 train_neg_sample_args:

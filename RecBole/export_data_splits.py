@@ -63,6 +63,42 @@ def export_amazon_item_file(dataset, output_file):
 
     print(f"Finished writing: {output_file}")
 
+
+
+def export_mind_item_file(dataset, output_file):
+    """Export Mind-style item file with mapped token fields and raw float fields."""
+    item_feat = dataset.item_feat.numpy()
+
+    # Extract fields
+    item_id = item_feat['item_id']
+    title_id = item_feat['title']
+    category_id = item_feat['categories']
+    abstract_id = item_feat['abstract']
+
+    # Token mappings
+    title_map = dataset.field2id_token['title']
+    category_map = dataset.field2id_token['categories']
+    abstract_map = dataset.field2id_token['abstract']
+
+    # Open file and write header
+    with open(output_file, 'w', encoding='utf-8') as writer:
+        writer.write('item_id:token\ttitle:token\tcategories:token\taverage_rating:float\trating_number:float\tprice:float\n')
+
+        for i in range(len(item_id)):
+            iid = int(item_id[i])  # transformed item_id
+            tid = int(title_id[i])
+            cid = int(category_id[i])
+            aid = int(abstract_id[i])
+
+            title_str = title_map[tid] if tid < len(title_map) else '[UNK]'
+            category_str = category_map[cid] if cid < len(category_map) else '[UNK]'
+            abstract_str = abstract_map[aid] if aid < len(abstract_map) else '[UNK]'
+
+            writer.write(f"{iid}\t{title_str}\t{category_str}\t{abstract_str}\n")
+
+    print(f"Finished writing: {output_file}")
+
+
 def export_ml_item_file(dataset, output_file):
     """Export ML-1M item file in raw format with proper genre formatting."""
     item_feat = dataset.item_feat.numpy()
@@ -156,8 +192,13 @@ def export_dataset_raw_format(model, dataset_name, output_dir, config_file_list=
 
     if 'amzn' in dataset_name:
         export_amazon_item_file(dataset, os.path.join(output_dir, 'item'))
-    else:
+    elif 'mind' in dataset_name: 
+        export_mind_item_file(dataset, os.path.join(output_dir, 'item'))
+    elif 'ml' in dataset_name: 
         export_ml_item_file(dataset, os.path.join(output_dir, 'item'))
+    else: 
+        raise NotImplementedError(f"{dataset_name}-specific export module is not implemented") 
+        
     export_user_file(dataset, os.path.join(output_dir, 'user'))
     
     print("All files exported.")

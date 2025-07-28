@@ -29,8 +29,3 @@ hidden_dropout_prob: 0.5 # 0.2 for ml, 0.5 for others
 attn_dropout_prob: 0.5 # 0.2 for ml, 0.5 for others
 aap_weight: 1.0
 mip_weight: 0.2
-
-
-gpu_id: "4,5"
-
-resume_path: /home/jingyuanhe1222/RecSysArena/checkpoints/SASRecF_amzn-books/SASRecF-Jul-15-2025_21-53-42.pth
