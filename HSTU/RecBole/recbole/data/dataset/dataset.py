@@ -2136,7 +2136,7 @@ class Dataset(torch.utils.data.Dataset):
                 new_data[k] = torch.LongTensor(value)
             elif ftype == FeatureType.FLOAT:
                 if k in self.config["numerical_features"]:
-                    new_data[k] = torch.FloatTensor(value.tolist())
+                    new_data[k] = torch.DoubleTensor(value.tolist())
                 else:
                     new_data[k] = torch.FloatTensor(value)
             elif ftype == FeatureType.TOKEN_SEQ:
