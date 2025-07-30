@@ -45,5 +45,4 @@ python run_recbole.py  \
     --dataset $dataset \
     --exp_name $exp_name \
     --nproc $nproc \
-    --config_files "${model_config} ${data_config} ${eval_config}" \
-    --data_preprocess 
+    --config_files "${model_config} ${data_config} ${eval_config}" 
