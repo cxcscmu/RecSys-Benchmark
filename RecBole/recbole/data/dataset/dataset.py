@@ -484,7 +484,7 @@ class Dataset(torch.utils.data.Dataset):
             return None
 
         # quoting=3 for mind_small
-        if "mind" in self.dataset_name: 
+        if "mind" or 'lastfm' in self.dataset_name: 
             df = pd.read_csv(
                 filepath,
                 delimiter=field_separator,
@@ -495,7 +495,7 @@ class Dataset(torch.utils.data.Dataset):
                 quoting=3, 
             )
         else: 
-            df = pd.read_csv(
+            df = pd.read_csv( 
                 filepath,
                 delimiter=field_separator,
                 usecols=usecols,

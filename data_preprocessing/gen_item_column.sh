@@ -18,14 +18,15 @@
 
 # enter a config env
 eval "$(conda shell.bash hook)"
-conda activate taste
+conda activate recsys_ben
 
 
 dataset="amzn-books"
 meta_dataset_name="Book"
-item_path="/data/group_data/cx_group/REC/data/${dataset}/${dataset}.item"
-source_item_path="/data/group_data/cx_group/REC/data/${dataset}/source/meta_${meta_dataset_name}.json"
+item_path="/data/group_data/cx_group/REC/data/${dataset}/${dataset}.item" # downloaded converted item data 
+source_item_path="/data/group_data/cx_group/REC/data/${dataset}/source/meta_${meta_dataset_name}.json" # amzn-review meta data
 title_item_output_path="/data/group_data/cx_group/REC/data/${dataset}/source/${dataset}.item"
 
-python /home/jingyuah/REC_source/TASTE/item_add_title.py
+
+python RecSys-Benchmark/data_preprocessing/item_add_title.py
 

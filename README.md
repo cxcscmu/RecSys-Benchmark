@@ -60,7 +60,17 @@ Install RecBole as per RecBole README:
 We format public datasets into interactions, user-data, item-data.
 We use [RecSysDatasets - Conversion Tools](https://github.com/RUCAIBox/RecSysDatasets/tree/master/conversion_tools) over this pre-processing step. We directly use the preprocessed versions given in their Google Drive. 
 
-While the item data processing part of the conversion tool do not work for AmazonReview 2023 datasets at the time we perform our experiements, we include a script that align the downloaded raw item data with the interactions exported by this conversion tool: `TASTE/reproduce/dataprocess/gen_item_column.sh`.
+
+#### AmazonReview
+While the item data processing part of the conversion tool do not work for AmazonReview 2023 datasets at the time we perform our experiements, we include a script that align the downloaded raw item data with the interactions exported by this conversion tool: `data_preprocessing/gen_item_column.sh`.
+
+
+#### MIND-small
+We use all the positive labeled interactions from the train set of MIND-small. Similar to other dataset, we fed this into [RecSysDatasets - Conversion Tools](https://github.com/RUCAIBox/RecSysDatasets/tree/master/conversion_tools). Notice that the `mind_small_train` alias is depreciated so we used `mind_large_train`. 
+
+We then run `data_preprocessing/remove_0_labels.py` to select positive-labeled interactions only to enable full sort evaluation in RecBole. 
+
+
 
 <!-- -------------------------- -->
 ### Export Benchmark Data Splits
@@ -80,10 +90,17 @@ We use [Recbole](https://github.com/RUCAIBox/RecBole) implementation of the foll
 The scripts we use to launch experiments for each model can be found under folder `RecBole/scripts`.
 You can modify the `model` and `dataset` variables within these scripts to reproduce our experiments on the model and dataset desired.
 
+
 For example:
 
     cd RecSys-Benchmark/RecBole
     sbatch scripts/run_SASRec.sh
+
+*Note*:  
+- For some models, we might modify the attributes/features used for different dataset, for instance, dropout rate of SASRec are different for ml-1m and Amazon dataset. Please go over the model config for details. 
+<!-- Update RecBole to avoid: https://github.com/RUCAIBox/RecBole/issues/1653 -->
+
+
 
 *Note*:
 - Remember to update the dataset you want to process in the scripts and associated paths in the dataset config yaml under `RecSys-Benchmark/RecBole/configs/datasets`.
