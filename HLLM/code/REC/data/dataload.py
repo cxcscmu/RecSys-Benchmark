@@ -89,11 +89,6 @@ class Data:
             self.token2id[feature] = token_id
             self.inter_feat[feature] = self.inter_feat[feature].map(token_id)
 
-        if self.config["export_remap"]:
-            import pickle
-            with open(os.path.join(self.config['export_remap'], "id2token.pkl"), "wb") as f:
-                pickle.dump(self.id2token, f)
-
         self.user_num = len(self.id2token['user_id'])
         self.item_num = len(self.id2token['item_id'])
         self.logger.info(f"{self.user_num = } {self.item_num = }")
