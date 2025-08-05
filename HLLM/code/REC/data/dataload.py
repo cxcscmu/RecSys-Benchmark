@@ -134,7 +134,6 @@ class Data:
 
         # Load item details if needed - use same format as expected in original code
         if os.path.exists(item_details_path):
-            breakpoint()
             item_data = pd.read_csv(
                 item_details_path, delimiter=',', dtype={'item_id': str}, header=0
             )
@@ -163,9 +162,14 @@ class Data:
         train_data.sort_values(by='timestamp', ascending=True, inplace=True)
 
         # Build user sequences exactly as in the original build method
-        user_list = train_data['user_id'].values
-        item_list = train_data['item_id'].values
-        timestamp_list = train_data['timestamp'].values
+        # user_list = train_data['user_id'].values ### BUG
+        # item_list = train_data['item_id'].values ### BUG
+
+        user_list = self.inter_feat['user_id'].values
+        item_list = self.inter_feat['item_id'].values
+
+        # timestamp_list = train_data['timestamp'].values ### BUG
+        timestamp_list =  self.inter_feat['timestamp'].values
         grouped_index = self._grouped_index(user_list)
 
         user_seq = {}
@@ -176,15 +180,15 @@ class Data:
 
         self.user_seq = user_seq
         self.time_seq = time_seq
-
-
         train_feat = dict()
         indices = []
         for index in grouped_index.values():
-            indices.extend(list(index))
+            # indices.extend(list(index)) ### BUG
+            indices.extend(list(index)[:-2])
 
         for k in train_data.columns:
-            train_feat[k] = train_data[k].values[indices]
+            # train_feat[k] = train_data[k].values[indices] ### BUG
+            train_feat[k] = self.inter_feat[k].values[indices]
 
         # Apply the same sequence building logic based on model type
         if self.config['MODEL_INPUT_TYPE'] == InputType.AUGSEQ:
@@ -204,7 +208,6 @@ class Data:
         grouped_test = test_data.groupby('user_id')
         for uid, group in grouped_test:
             self.test_data[uid] = group['item_id'].values.tolist()
-
         self.logger.info(f"Pre-split data loading completed. Train sequences: {len(self.user_seq)}, Valid users: {len(self.valid_data)}, Test users: {len(self.test_data)}")
 
     def build(self, use_pre_split):
