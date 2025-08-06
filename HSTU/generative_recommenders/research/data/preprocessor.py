@@ -136,16 +136,16 @@ class MovielensDataProcessor(DataProcessor):
         pass
 
     def processed_item_csv(self) -> str:
-        return f"tmp/processed/{self._prefix}/movies.csv"
+        return f"../tmp/processed/{self._prefix}/movies.csv"
 
     def sasrec_format_csv_by_user_train(self) -> str:
-        return f"tmp/{self._prefix}/sasrec_format_by_user_train.csv"
+        return f"../tmp/{self._prefix}/sasrec_format_by_user_train.csv"
     
     def sasrec_format_csv_by_user_valid(self) -> str:
-        return f"tmp/{self._prefix}/sasrec_format_by_user_valid.csv"
+        return f"../tmp/{self._prefix}/sasrec_format_by_user_valid.csv"
 
     def sasrec_format_csv_by_user_test(self) -> str:
-        return f"tmp/{self._prefix}/sasrec_format_by_user_test.csv"
+        return f"../tmp/{self._prefix}/sasrec_format_by_user_test.csv"
 
     def preprocess_rating(self) -> int:
         self.download()
@@ -778,11 +778,11 @@ class AmazonDataProcessor(DataProcessor):
         # return num_unique_items
     
     def sasrec_format_csv_by_user_train(self) -> str:
-        return f"tmp/{self._prefix}/sasrec_format_by_user_train.csv"
+        return f"../tmp/{self._prefix}/sasrec_format_by_user_train.csv"
     def sasrec_format_csv_by_user_valid(self) -> str:
-        return f"tmp/{self._prefix}/sasrec_format_by_user_valid.csv"
+        return f"../tmp/{self._prefix}/sasrec_format_by_user_valid.csv"
     def sasrec_format_csv_by_user_test(self) -> str:
-        return f"tmp/{self._prefix}/sasrec_format_by_user_test.csv"
+        return f"../tmp/{self._prefix}/sasrec_format_by_user_test.csv"
 
 
 def get_common_preprocessors() -> (
