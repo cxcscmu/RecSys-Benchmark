@@ -77,6 +77,7 @@ We then run `data_preprocessing/remove_0_labels.py` to select positive-labeled i
 You can run the following script to export ORBIT's train, validation, and test splits.
 
 <!-- cd RecSys-Benchmark/RecBole -->
+    cd RecSys-Benchmark/RecBole
     sbatch scripts/run_export_data_splits.sh
 
 *Note*: Remember to update the dataset you want to process in the scripts and associated paths. The model config is a placeholder we use to adapt the benchmark data split exports in Recbole pipeline.
