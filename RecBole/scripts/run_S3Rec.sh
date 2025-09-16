@@ -21,9 +21,4 @@ conda activate recsys_ben
 
 export NCCL_P2P_DISABLE=1
 
-
-source_dir="/data/user_data/chunings/RecSys-Benchmark/RecBole"
-
-cd $source_dir
-
 python3 run_recbole.py --model "S3Rec" --dataset "amzn-sports" --exp_name "s3rec_amzn-sports" --nproc 8 --config_files "configs/models/S3Rec.yaml configs/datasets/amzn.yaml configs/eval.yaml"
