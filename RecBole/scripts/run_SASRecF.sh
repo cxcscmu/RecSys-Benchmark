@@ -21,9 +21,4 @@
 eval "$(conda shell.bash hook)"
 conda activate recsys_ben
 
-
-source_dir="/data/user_data/chunings/RecSys-Benchmark/RecBole"
-
-cd $source_dir
-
-python3 run_recbole.py --model "SASRecF" --dataset "amzn-books" --exp_name "SASRecf_amzn-books" --nproc 1 --config_files "configs/models/sasrecf.yaml configs/datasets/amzn.yaml configs/eval.yaml"
+python3 run_recbole.py --model "SASRecF" --dataset "amzn-books" --exp_name "SASRecf_amzn-books" --nproc 1 --config_files "configs/models/SASRecF.yaml configs/datasets/amzn.yaml configs/eval.yaml"
