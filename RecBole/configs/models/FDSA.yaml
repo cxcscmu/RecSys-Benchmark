@@ -8,7 +8,7 @@ initializer_range: 0.02
 pooling_mode: mean
 loss_type: CE
 train_neg_sample_args: null
-selected_features: ['movie_title', 'genre', 'release_year'] # selected_features: ['movie_title', 'genre', 'release_year'] for ml1m
+selected_features = ['categories', 'average_rating', 'rating_number'] # selected_features: ['movie_title', 'genre', 'release_year'] for ml1m
 epochs: 50
 train_batch_size: 512
 eval_batch_size: 256
