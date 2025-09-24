@@ -136,47 +136,54 @@ class MovielensDataProcessor(DataProcessor):
         pass
 
     def processed_item_csv(self) -> str:
-        return f"../tmp/processed/{self._prefix}/movies.csv"
+        return f"tmp/processed/{self._prefix}/movies.csv"
 
     def sasrec_format_csv_by_user_train(self) -> str:
-        return f"../tmp/{self._prefix}/sasrec_format_by_user_train.csv"
+        return f"tmp/{self._prefix}/sasrec_format_by_user_train.csv"
     
     def sasrec_format_csv_by_user_valid(self) -> str:
-        return f"../tmp/{self._prefix}/sasrec_format_by_user_valid.csv"
+        return f"tmp/{self._prefix}/sasrec_format_by_user_valid.csv"
 
     def sasrec_format_csv_by_user_test(self) -> str:
-        return f"../tmp/{self._prefix}/sasrec_format_by_user_test.csv"
+        return f"tmp/{self._prefix}/sasrec_format_by_user_test.csv"
 
     def preprocess_rating(self) -> int:
         self.download()
 
         if self._prefix == "ml-1m":
             users = pd.read_csv(
-                f"../tmp/{self._prefix}/users.dat",
-                sep="::",
+                f"tmp/{self._prefix}/user",
+                sep="\t",
+                skiprows=1,
                 names=["user_id", "sex", "age_group", "occupation", "zip_code"],
             )
             train_ratings = pd.read_csv(
-                f"../tmp/{self._prefix}/train_ratings.dat",
-                sep="::",
+                f"tmp/{self._prefix}/train.inter",
+                sep="\t",
+                skiprows=1,
                 names=["user_id", "movie_id", "rating", "unix_timestamp"],
             )
             valid_ratings = pd.read_csv(
-                f"../tmp/{self._prefix}/valid_ratings.dat",
-                sep="::",
+                f"tmp/{self._prefix}/valid.inter",
+                sep="\t",
+                skiprows=1,
                 names=["user_id", "movie_id", "rating", "unix_timestamp"],
             )
             test_ratings = pd.read_csv(
-                f"../tmp/{self._prefix}/test_ratings.dat",
-                sep="::",
+                f"tmp/{self._prefix}/test.inter",
+                sep="\t",
+                skiprows=1,
                 names=["user_id", "movie_id", "rating", "unix_timestamp"],
             )
             movies = pd.read_csv(
-                f"../tmp/{self._prefix}/movies.dat",
-                sep="::",
-                names=["movie_id", "title", "genres"],
+                f"tmp/{self._prefix}/item",
+                sep="\t",
+                skiprows=1,
+                names=["movie_id", "cleaned_title", "year", "genres"],
                 encoding="iso-8859-1",
             )
+            movies.dropna(inplace=True)
+
         # elif self._prefix == "ml-20m":
         #     # ml-20m
         #     # ml-20m doesn't have user data.
@@ -226,8 +233,9 @@ class MovielensDataProcessor(DataProcessor):
 
         if movies is not None:
             # ML-1M and ML-20M only
-            movies["year"] = movies["title"].apply(lambda x: x[-5:-1])
-            movies["cleaned_title"] = movies["title"].apply(lambda x: x[:-7])
+            # movies["year"] = movies["title"].apply(lambda x: x[-5:-1])
+            # movies["cleaned_title"] = movies["title"].apply(lambda x: x[:-7])
+            movies["genres"] = movies["genres"].apply(lambda x: "|".join(x.split(" ")))
             # movies.year = pd.Categorical(movies.year)
             # movies["year"] = movies.year.cat.codes
 
@@ -272,15 +280,15 @@ class MovielensDataProcessor(DataProcessor):
             )
 
         # Save primary csv's
-        if not os.path.exists(f"../tmp/processed/{self._prefix}"):
-            os.makedirs(f"../tmp/processed/{self._prefix}")
+        if not os.path.exists(f"tmp/processed/{self._prefix}"):
+            os.makedirs(f"tmp/processed/{self._prefix}")
         if users is not None:
-            users.to_csv(f"../tmp/processed/{self._prefix}/users.csv", index=False)
+            users.to_csv(f"tmp/processed/{self._prefix}/users.csv", index=False)
         if movies is not None:
-            movies.to_csv(f"../tmp/processed/{self._prefix}/movies.csv", index=False)
-        train_ratings.to_csv(f"../tmp/processed/{self._prefix}/train_ratings.csv", index=False)
-        valid_ratings.to_csv(f"../tmp/processed/{self._prefix}/valid_ratings.csv", index=False)
-        test_ratings.to_csv(f"../tmp/processed/{self._prefix}/test_ratings.csv", index=False)
+            movies.to_csv(f"tmp/processed/{self._prefix}/movies.csv", index=False)
+        train_ratings.to_csv(f"tmp/processed/{self._prefix}/train_ratings.csv", index=False)
+        valid_ratings.to_csv(f"tmp/processed/{self._prefix}/valid_ratings.csv", index=False)
+        test_ratings.to_csv(f"tmp/processed/{self._prefix}/test_ratings.csv", index=False)
 
         num_unique_items_train = len(set(train_ratings["movie_id"].values))
 
@@ -487,38 +495,41 @@ class AmazonDataProcessor(DataProcessor):
         self.download()
 
         train_ratings = pd.read_csv(
-            f"../tmp/{self._prefix}/train_ratings.csv",
-            sep=",",
+            f"tmp/{self._prefix}/train.inter",
+            sep="\t",
             names=["user_id", "item_id", "rating", "timestamp"],
+            skiprows=1,
         )
 
         valid_ratings = pd.read_csv(
-            f"../tmp/{self._prefix}/valid_ratings.csv",
-            sep=",",
+            f"tmp/{self._prefix}/valid.inter",
+            sep="\t",
             names=["user_id", "item_id", "rating", "timestamp"],
+            skiprows=1,
         )
 
         test_ratings = pd.read_csv(
-            f"../tmp/{self._prefix}/test_ratings.csv",
-            sep=",",
+            f"tmp/{self._prefix}/test.inter",
+            sep="\t",
             names=["user_id", "item_id", "rating", "timestamp"],
+            skiprows=1,
         )
 
-        all_user_ids = pd.concat([train_ratings['user_id'], valid_ratings['user_id'], test_ratings['user_id']]).unique()
-        all_item_ids = pd.concat([train_ratings['item_id'], valid_ratings['item_id'], test_ratings['item_id']]).unique()
+        # all_user_ids = pd.concat([train_ratings['user_id'], valid_ratings['user_id'], test_ratings['user_id']]).unique()
+        # all_item_ids = pd.concat([train_ratings['item_id'], valid_ratings['item_id'], test_ratings['item_id']]).unique()
 
-        user_id_to_idx = {uid: idx + 1 for idx, uid in enumerate(all_user_ids)}
-        item_id_to_idx = {iid: idx + 1 for idx, iid in enumerate(all_item_ids)}
+        # user_id_to_idx = {uid: idx + 1 for idx, uid in enumerate(all_user_ids)}
+        # item_id_to_idx = {iid: idx + 1 for idx, iid in enumerate(all_item_ids)}
 
-        def apply_consistent_mapping(df):
-            df_copy = df.copy()
-            df_copy['user_id'] = df_copy['user_id'].map(user_id_to_idx)
-            df_copy['item_id'] = df_copy['item_id'].map(item_id_to_idx)
-            return df_copy
+        # def apply_consistent_mapping(df):
+        #     df_copy = df.copy()
+        #     df_copy['user_id'] = df_copy['user_id'].map(user_id_to_idx)
+        #     df_copy['item_id'] = df_copy['item_id'].map(item_id_to_idx)
+        #     return df_copy
         
-        train_ratings_mapped = apply_consistent_mapping(train_ratings)
-        valid_ratings_mapped = apply_consistent_mapping(valid_ratings)
-        test_ratings_mapped = apply_consistent_mapping(test_ratings)
+        # train_ratings_mapped = apply_consistent_mapping(train_ratings)
+        # valid_ratings_mapped = apply_consistent_mapping(valid_ratings)
+        # test_ratings_mapped = apply_consistent_mapping(test_ratings)
 
         def to_sasrec_version(ratings):
             # ratings = pd.read_csv(
@@ -593,9 +604,9 @@ class AmazonDataProcessor(DataProcessor):
 
             return seq_ratings_data
         
-        seq_train_ratings = to_sasrec_version(train_ratings_mapped)
-        seq_valid_ratings = to_sasrec_version(valid_ratings_mapped)
-        seq_test_ratings = to_sasrec_version(test_ratings_mapped)
+        seq_train_ratings = to_sasrec_version(train_ratings)
+        seq_valid_ratings = to_sasrec_version(valid_ratings)
+        seq_test_ratings = to_sasrec_version(test_ratings)
 
         # print(f"{seq_train_ratings=}")
         # print(f"{seq_valid_ratings=}")
@@ -778,11 +789,11 @@ class AmazonDataProcessor(DataProcessor):
         # return num_unique_items
     
     def sasrec_format_csv_by_user_train(self) -> str:
-        return f"../tmp/{self._prefix}/sasrec_format_by_user_train.csv"
+        return f"tmp/{self._prefix}/sasrec_format_by_user_train.csv"
     def sasrec_format_csv_by_user_valid(self) -> str:
-        return f"../tmp/{self._prefix}/sasrec_format_by_user_valid.csv"
+        return f"tmp/{self._prefix}/sasrec_format_by_user_valid.csv"
     def sasrec_format_csv_by_user_test(self) -> str:
-        return f"../tmp/{self._prefix}/sasrec_format_by_user_test.csv"
+        return f"tmp/{self._prefix}/sasrec_format_by_user_test.csv"
 
 
 def get_common_preprocessors() -> (
