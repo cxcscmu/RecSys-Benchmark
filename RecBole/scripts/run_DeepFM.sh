@@ -39,13 +39,10 @@ exp_name="${model}_${dataset}"
 
 # nproc=1
 
-source_dir="/home/karrym/capstone/RecBole"
 
-model_config="${source_dir}/configs/models/${model}.yaml"
-data_config="${source_dir}/configs/datasets/${dataset_type}.yaml"
-eval_config="${source_dir}/configs/eval.yaml"
-
-cd $source_dir
+model_config="configs/models/${model}.yaml"
+data_config="configs/datasets/${dataset_type}.yaml"
+eval_config="configs/eval.yaml"
 
 python run_recbole.py  \
     --dataset $dataset \

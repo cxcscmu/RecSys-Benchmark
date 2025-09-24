@@ -1,5 +1,5 @@
 # Env
-checkpoint_dir: /data/group_data/cx_group/REC/checkpoints
+checkpoint_dir: checkpoints
 log_wandb: True 
 wandb_project: RecSys-Benchmark 
 show_progress: True
