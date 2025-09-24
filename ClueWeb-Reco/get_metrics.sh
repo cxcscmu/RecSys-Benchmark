@@ -14,6 +14,7 @@ conda activate recsys_ben
 
 # get results
 predicted_file=""
+# update path to the location of ClueWeb-Reco dataset
 target_path="/data/group_data/cx_group/REC/ClueWeb-Reco/ClueWeb-Reco_public/ordered_id_splits/valid_target.tsv"
 python ClueWeb-Reco/get_metrics.py \
     --valid \
