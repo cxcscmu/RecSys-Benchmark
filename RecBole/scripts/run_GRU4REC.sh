@@ -18,14 +18,9 @@ dataset="ml-1m" # amzn-beauty, amzn-books, amzn-toys, amzn-sports
 
 exp_name="${model}_${dataset}"
 
-source_dir="RecSys-Benchmark/RecBole"
-
-model_config="${source_dir}/configs/models/${model}.yaml"
-data_config="${source_dir}/configs/datasets/${dataset_type}.yaml"
-eval_config="${source_dir}/configs/eval.yaml"
-
-
-cd $source_dir
+model_config="configs/models/${model}.yaml"
+data_config="configs/datasets/${dataset_type}.yaml"
+eval_config="configs/eval.yaml"
 
 python3 run_recbole.py \
     --model $model \
