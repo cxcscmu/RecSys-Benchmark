@@ -230,6 +230,11 @@ class MovielensDataProcessor(DataProcessor):
         #     )
         #     users = None
         #     movies = None
+    
+        # Make sure timestamp is int
+        train_ratings["unix_timestamp"] = train_ratings["unix_timestamp"].astype(int)
+        valid_ratings["unix_timestamp"] = valid_ratings["unix_timestamp"].astype(int)
+        test_ratings["unix_timestamp"] = test_ratings["unix_timestamp"].astype(int)
 
         if movies is not None:
             # ML-1M and ML-20M only
@@ -514,6 +519,11 @@ class AmazonDataProcessor(DataProcessor):
             names=["user_id", "item_id", "rating", "timestamp"],
             skiprows=1,
         )
+
+        # Make sure timestamp is int
+        train_ratings["timestamp"] = train_ratings["timestamp"].astype(int)
+        valid_ratings["timestamp"] = valid_ratings["timestamp"].astype(int)
+        test_ratings["timestamp"] = test_ratings["timestamp"].astype(int)
 
         # all_user_ids = pd.concat([train_ratings['user_id'], valid_ratings['user_id'], test_ratings['user_id']]).unique()
         # all_item_ids = pd.concat([train_ratings['item_id'], valid_ratings['item_id'], test_ratings['item_id']]).unique()
