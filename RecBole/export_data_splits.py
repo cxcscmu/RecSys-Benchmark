@@ -41,7 +41,6 @@ def export_amazon_item_file(dataset, output_file):
     category_id = item_feat['categories']
     avg_rating = item_feat['average_rating']
     rating_num = item_feat['rating_number']
-    price = item_feat['price']
 
     # Token mappings
     title_map = dataset.field2id_token['title']
@@ -49,7 +48,7 @@ def export_amazon_item_file(dataset, output_file):
 
     # Open file and write header
     with open(output_file, 'w', encoding='utf-8') as writer:
-        writer.write('item_id:token\ttitle:token\tcategories:token\taverage_rating:float\trating_number:float\tprice:float\n')
+        writer.write('item_id:token\ttitle:token\tcategories:token\taverage_rating:float\trating_number:float\n')
 
         for i in range(len(item_id)):
             iid = int(item_id[i])  # transformed item_id
