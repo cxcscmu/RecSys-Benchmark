@@ -3,7 +3,7 @@ conda activate hstu
 
 # TODO: Change this to your own HSTU directory and dataset splits directory
 HSTU_DIR="/home/karrym/capstone/RecSys-Benchmark/HSTU"
-DATA_SPLITS_DIR="/data/group_data/cx_group/REC/data/benchmark_splits"
+DATA_SPLITS_DIR="/data/group_data/cx_group/REC/data/benchmark_splits_corrected"
 
 cd $HSTU_DIR
 mkdir -p tmp

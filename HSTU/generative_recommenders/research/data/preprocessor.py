@@ -182,6 +182,7 @@ class MovielensDataProcessor(DataProcessor):
                 names=["movie_id", "cleaned_title", "year", "genres"],
                 encoding="iso-8859-1",
             )
+            users.dropna(inplace=True)
             movies.dropna(inplace=True)
 
         # elif self._prefix == "ml-20m":
