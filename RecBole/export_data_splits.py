@@ -58,7 +58,7 @@ def export_amazon_item_file(dataset, output_file):
             title_str = title_map[tid] if tid < len(title_map) else '[UNK]'
             category_str = category_map[cid] if cid < len(category_map) else '[UNK]'
 
-            writer.write(f"{iid}\t{title_str}\t{category_str}\t{avg_rating[i]:.3f}\t{rating_num[i]:.3f}\t{price[i]:.2f}\n")
+            writer.write(f"{iid}\t{title_str}\t{category_str}\t{avg_rating[i]:.3f}\t{rating_num[i]:.3f}\n")
 
     print(f"Finished writing: {output_file}")
 
