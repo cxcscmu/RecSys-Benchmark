@@ -8,16 +8,16 @@
 #SBATCH --nodes=1
 
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=8
 
-#SBATCH --mem=48G
+#SBATCH --mem=96G
 
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:A6000:4
 
 #SBATCH --time=48:00:00
 
 #SBATCH --mail-type=END
-#SBATCH --mail-user="bolinw@andrew.cmu.edu"
+#SBATCH --mail-user="karrym@andrew.cmu.edu"
 
 
 # enter a config env
@@ -31,11 +31,12 @@ exp_name="${model}_${dataset}_valid"
 
 nproc=1
 
-source_dir="/data/user_data/bolinw/HSTU"
+source_dir="/home/karrym/capstone/RecSys-Benchmark/HSTU"
 gin_config_file="configs/${dataset}/hstu-sampled-softmax-n128-large-final_train.gin"
 
 cd $source_dir
 
+RANDOM_PORT=$((10000 + RANDOM % 20000))
 python3 main.py \
     --gin_config_file=$gin_config_file \
-    --master_port=12345
+    --master_port=$RANDOM_PORT
