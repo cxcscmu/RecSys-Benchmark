@@ -22,7 +22,7 @@ hstu_encoder.dqk = 8
 hstu_encoder.linear_dropout_rate = 0.5
 
 train_fn.eval_interval = 4000
-train_fn.num_epochs = 176
+train_fn.num_epochs = 156
 train_fn.learning_rate = 1e-3
 train_fn.weight_decay = 0
 train_fn.num_warmup_steps = 0
@@ -43,7 +43,7 @@ train_fn.full_eval_every_n = 20
 train_fn.partial_eval_num_iters = 64
 
 train_fn.save_ckpt_every_n = 1000
-train_fn.resume_from_checkpoint = "amzn-sports-l50/ckpt_ep175"
+train_fn.resume_from_checkpoint = "amzn-sports-l50/ckpt_ep155"
 train_fn.eval_set = "test"
 
 create_data_loader.prefetch_factor = 1024

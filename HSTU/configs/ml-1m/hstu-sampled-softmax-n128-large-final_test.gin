@@ -15,7 +15,7 @@ train_fn.local_batch_size = 128
 train_fn.main_module = "HSTU"
 train_fn.dropout_rate = 0.2
 train_fn.user_embedding_norm = "l2_norm"
-train_fn.num_epochs = 86
+train_fn.num_epochs = 101
 train_fn.item_embedding_dim = 50
 
 hstu_encoder.num_blocks = 8
@@ -40,7 +40,7 @@ train_fn.item_l2_norm = True
 train_fn.l2_norm_eps = 1e-6
 
 train_fn.enable_tf32 = True
-train_fn.resume_from_checkpoint = "ml-1m-l200/ckpt_ep85"
+train_fn.resume_from_checkpoint = "ml-1m-l200/ckpt_ep100"
 train_fn.eval_set = "test"
 
 create_data_loader.prefetch_factor = 128
