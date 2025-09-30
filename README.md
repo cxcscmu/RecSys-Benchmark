@@ -159,7 +159,7 @@ For example, to train and test TASTE on `ml-1m` dataset:
     sbatch reproduce/test/ml/test_ml.sh
 
 *Note*: We manually remove the 0th `[PAD]` item included in the `item.txt` 
-file created by `process_TASTE.sh` before running inference via test_ml.sh, aligned with the original TASTE implementation.
+file created by `process_TASTE.sh` before running inference via `test_ml.sh`, aligned with the original TASTE implementation.
 
 *Note*: Remember to update associated paths in these scripts.
 
