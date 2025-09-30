@@ -140,7 +140,10 @@ Secondly, generate item features:
 Thirdly, generate training and evalution features:
 
     sbatch TASTE/reproduce/dataprocess/build_train.sh
-
+    
+*Note*: We manually remove the 0th `[PAD]` item included in the `item.txt` 
+file created by `process_TASTE.sh` before running inference, as per 
+[TASTE's original repo](https://github.com/OpenMatch/TASTE/issues/10).
 *Note*: Remember to update the dataset you want to process in the scripts and associated paths.
 
 
