@@ -141,9 +141,7 @@ Thirdly, generate training and evalution features:
 
     sbatch TASTE/reproduce/dataprocess/build_train.sh
     
-*Note*: We manually remove the 0th `[PAD]` item included in the `item.txt` 
-file created by `process_TASTE.sh` before running inference, as per 
-[TASTE's original repo](https://github.com/OpenMatch/TASTE/issues/10).
+
 
 *Note*: Remember to update the dataset you want to process in the scripts and associated paths.
 
@@ -160,6 +158,8 @@ For example, to train and test TASTE on `ml-1m` dataset:
     sbatch reproduce/train/ml/train_ml.sh
     sbatch reproduce/test/ml/test_ml.sh
 
+*Note*: We manually remove the 0th `[PAD]` item included in the `item.txt` 
+file created by `process_TASTE.sh` before running inference via test_ml.sh, aligned with the original TASTE implementation.
 
 *Note*: Remember to update associated paths in these scripts.
 
