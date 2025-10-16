@@ -115,8 +115,6 @@ class TopkMetric(AbstractMetric):
         pos_index_bool = topk_idx.to(torch.bool).cpu().numpy()
         pos_len_np = pos_len_list.squeeze(-1).cpu().numpy()
 
-        # mask out padded/out-of-range items
-        pos_index_bool = _mask_padded_items(dataobject, pos_index_bool)
 
         return pos_index_bool, pos_len_np
 

@@ -23,6 +23,83 @@ from REC.utils import set_color
 from REC.utils.enum_type import InputType
 from torch_geometric.utils import degree
 
+import pandas as pd
+import numpy as np
+import csv
+
+def _read_typed_table(path):
+    """
+    Typed-header reader for two cases:
+      1) Tab-delimited rows (e.g., item file with text): sep='\t' (quoting ON).
+      2) Whitespace-delimited numeric rows (e.g., *.inter): sep=r'\s+' (no quoting).
+    First line must be a typed header like:
+      item_id:token  title:token  ...  price:float
+      or with FeatureType.*.
+    """
+    # Read header and peek first data line to detect delimiter
+    with open(path, "r", encoding="utf-8") as f:
+        header = f.readline().rstrip("\n").lstrip("\ufeff")  # strip BOM just in case
+        peek = ""
+        for line in f:
+            if line.strip():
+                peek = line.rstrip("\n")
+                break
+    if not header:
+        raise ValueError(f"Empty header in {path}")
+
+    # Parse typed header (split by any whitespace; we’ll choose delimiter for the data below)
+    parts = header.split()
+    cols, dtypes = [], {}
+    for p in parts:
+        name, t = (p.split(":", 1) + ["token"])[:2] if ":" in p else (p, "token")
+        t = t.lower().replace("featuretype.", "")  # accept FeatureType.FLOAT etc.
+        cols.append(name)
+        if t == "token":
+            dtypes[name] = str
+        elif t == "float":
+            dtypes[name] = float
+        elif t == "int":
+            dtypes[name] = np.int64
+        else:
+            dtypes[name] = str
+
+    # Choose delimiter: if TAB appears in header or first row, treat file as TSV (safe for text)
+    is_tsv = ("\t" in header) or ("\t" in peek)
+
+    if is_tsv:
+        # Tab-delimited with quoting (handles long titles safely)
+        df = pd.read_csv(
+            path,
+            sep="\t",
+            skiprows=1,
+            names=cols,
+            engine="python",
+            quoting=csv.QUOTE_NONE,   # <-- don't interpret " as quote
+            quotechar="\u0000",       # <-- impossible quotechar, belt & suspenders
+            escapechar="\\",
+            dtype={k: v for k, v in dtypes.items() if v is not float},
+            keep_default_na=False,    # optional: don't turn bare strings like "NA" into NaN
+        )
+    else:
+        # Plain whitespace-delimited (e.g., *.inter)
+        df = pd.read_csv(
+            path,
+            sep=r"\s+",
+            skiprows=1,
+            names=cols,
+            engine="python",
+            dtype={k: v for k, v in dtypes.items() if v is not float},
+        )
+
+    # Cast float-ish ints (e.g., 1544671100000.0) to int64 for declared int fields
+    for c, t in dtypes.items():
+        if t is np.int64 and c in df.columns and pd.api.types.is_float_dtype(df[c]):
+            vals = df[c].to_numpy()
+            r = np.rint(vals)
+            if np.allclose(vals, r, rtol=0, atol=1e-6):
+                df[c] = r.astype("int64")
+
+    return df
 
 class Data:
     def __init__(self, config):
@@ -40,28 +117,29 @@ class Data:
         self._data_processing()
 
     def _load_inter_feat(self, token, dataset_path, item_data=None):
-        inter_feat_path = os.path.join(dataset_path, f'{token}.csv')
+        inter_feat_path = os.path.join(dataset_path, f"{token}.inter")
         if not os.path.isfile(inter_feat_path):
-            raise ValueError(f'File {inter_feat_path} not exist.')
+            raise ValueError(f"File {inter_feat_path} not exist.")
 
-        df = pd.read_csv(
-            inter_feat_path, delimiter=',', dtype={'user_id': str, 'item_id': str, 'timestamp': int}, header=0)
-        self.logger.info(f'Interaction feature loaded successfully from [{inter_feat_path}].')
+        df = _read_typed_table(inter_feat_path)
+
+        # normalize timestamp if floatish ints
+        if "timestamp" in df.columns and pd.api.types.is_float_dtype(df["timestamp"]):
+            rounded = np.rint(df["timestamp"])
+            if np.allclose(df["timestamp"], rounded, rtol=0, atol=1e-6):
+                df["timestamp"] = rounded.astype("int64")
+
         self.inter_feat = df
+        self.logger.info(f"Interaction feature loaded successfully from [{inter_feat_path}]. "
+                        f"Columns: {list(df.columns)}; rows: {len(df)}.")
 
+        # optional: item side features if provided as typed table named exactly `item`
         if item_data:
-            item_data_path = os.path.join(dataset_path, f'{item_data}.csv')
-            item_df = pd.read_csv(
-                item_data_path, delimiter=',', dtype={'item_id': str}, header=0
-            )
-            self.item_feat = item_df
-            self.logger.info(f'Item feature loaded successfully from [{item_data}].')
-
-            if 'item_id' in self.token2id:
-       	      self.item_feat['item_id'] = self.item_feat['item_id'].map(self.token2id['item_id'])
-            missing = self.item_feat['item_id'].isna().sum()
-            if missing > 0:
-              self.logger.warning(f"{missing} items in item_details.csv could not be mapped to interaction data")
+            item_path = os.path.join(dataset_path, f"{item_data}")
+            if not os.path.isfile(item_path):
+                raise ValueError(f"File {item_path} not exist.")
+            self.item_feat = _read_typed_table(item_path)
+            self.logger.info(f"Item feature loaded successfully from [{item_data}].")
 
     def _data_processing(self):
 
@@ -106,109 +184,67 @@ class Data:
         Load data from pre-split files (train/valid/test) in a way that's compatible with HLLM pipeline
         """
         self.logger.info(set_color(f'Loading pre-split data for {self.dataset_name}.', 'green'))
+        base = os.path.join(self.dataset_path, self.dataset_name)
 
-        # Define file paths for pre-split data
-        train_path = os.path.join(self.dataset_path, self.dataset_name, 'train_interactions.csv')
-        valid_path = os.path.join(self.dataset_path, self.dataset_name, 'valid_interactions.csv')
-        test_path = os.path.join(self.dataset_path, self.dataset_name, 'test_interactions.csv')
-        item_details_path = os.path.join(self.dataset_path, self.dataset_name, 'item_details.csv')
+        train_path = os.path.join(base, "train.inter")
+        valid_path = os.path.join(base, "valid.inter")
+        test_path  = os.path.join(base, "test.inter")
+        item_path  = os.path.join(base, "item")  # optional
 
-        # Load the data to match expected format
-        train_data = pd.read_csv(
-            train_path, delimiter=',', dtype={'user_id': str, 'item_id': str, 'timestamp': int}
-        )
-        self.logger.info(f'Train interactions loaded successfully from [{train_path}].')
+        train_data = _read_typed_table(train_path)
+        valid_data = _read_typed_table(valid_path)
+        test_data  = _read_typed_table(test_path)
+        self.logger.info(f"Train/valid/test loaded from [{train_path}], [{valid_path}], [{test_path}].")
+        if os.path.exists(item_path):
+            self.item_feat = _read_typed_table(item_path)
+            self.logger.info(f"Item details loaded successfully from [{item_path}].")
 
-        valid_data = pd.read_csv(
-            valid_path, delimiter=',', dtype={'user_id': str, 'item_id': str, 'timestamp': int}
-        )
-        self.logger.info(f'Valid interactions loaded successfully from [{valid_path}].')
-
-        test_data = pd.read_csv(
-            test_path, delimiter=',', dtype={'user_id': str, 'item_id': str, 'timestamp': int}
-        )
-        self.logger.info(f'Test interactions loaded successfully from [{test_path}].')
-        print(f' the length of training data is {len(train_data)}')
-        print(f' the length of training data is {len(valid_data)}')
-        print(f' the length of training data is {len(test_data)}')
-
-        # Load item details if needed - use same format as expected in original code
-        if os.path.exists(item_details_path):
-            item_data = pd.read_csv(
-                item_details_path, delimiter=',', dtype={'item_id': str}, header=0
-            )
-            self.item_feat = item_data
-            self.logger.info(f'Item details loaded successfully from [{item_details_path}].')
-
-        # Combine all interactions for consistent ID mapping
         all_data = pd.concat([train_data, valid_data, test_data], ignore_index=True)
         self.inter_feat = all_data
 
-        # Apply the same ID mapping process as the original code
+        # same mapping pipeline as before
         self._data_processing()
 
-        # Now process the same way as in the regular build method
-        self.logger.info(f"Building dataloader from pre-split files for {self.dataset_name}")
+        # map raw ids to internal ids for each split
+        for df in (train_data, valid_data, test_data):
+            df['user_id'] = df['user_id'].map(self.token2id['user_id'])
+            df['item_id'] = df['item_id'].map(self.token2id['item_id'])
 
-        # Map the raw IDs to internal IDs for all datasets
-        train_data['user_id'] = train_data['user_id'].map(self.token2id['user_id'])
-        train_data['item_id'] = train_data['item_id'].map(self.token2id['item_id'])
-        valid_data['user_id'] = valid_data['user_id'].map(self.token2id['user_id'])
-        valid_data['item_id'] = valid_data['item_id'].map(self.token2id['item_id'])
-        test_data['user_id'] = test_data['user_id'].map(self.token2id['user_id'])
-        test_data['item_id'] = test_data['item_id'].map(self.token2id['item_id'])
+        # sort train by timestamp like before
+        if 'timestamp' in train_data.columns:
+            train_data.sort_values(by='timestamp', ascending=True, inplace=True)
 
-        # Sort train data by timestamp (as done in the normal build method)
-        train_data.sort_values(by='timestamp', ascending=True, inplace=True)
-
-        # Build user sequences exactly as in the original build method
-        # user_list = train_data['user_id'].values ### BUG
-        # item_list = train_data['item_id'].values ### BUG
-
+        # Build sequences from the full inter_feat (matches your current logic)
         user_list = self.inter_feat['user_id'].values
         item_list = self.inter_feat['item_id'].values
-
-        # timestamp_list = train_data['timestamp'].values ### BUG
-        timestamp_list =  self.inter_feat['timestamp'].values
+        timestamp_list = self.inter_feat['timestamp'].values if 'timestamp' in self.inter_feat else np.zeros(len(self.inter_feat), dtype=np.int64)
         grouped_index = self._grouped_index(user_list)
 
-        user_seq = {}
-        time_seq = {}
+        user_seq, time_seq = {}, {}
         for uid, index in grouped_index.items():
             user_seq[uid] = item_list[index]
             time_seq[uid] = timestamp_list[index]
-
         self.user_seq = user_seq
         self.time_seq = time_seq
-        train_feat = dict()
+
+        # train_feat (unchanged logic)
+        train_feat = {}
         indices = []
         for index in grouped_index.values():
-            # indices.extend(list(index)) ### BUG
             indices.extend(list(index)[:-2])
-
-        for k in train_data.columns:
-            # train_feat[k] = train_data[k].values[indices] ### BUG
+        for k in self.inter_feat:
             train_feat[k] = self.inter_feat[k].values[indices]
 
-        # Apply the same sequence building logic based on model type
         if self.config['MODEL_INPUT_TYPE'] == InputType.AUGSEQ:
             train_feat = self._build_aug_seq(train_feat)
         elif self.config['MODEL_INPUT_TYPE'] == InputType.SEQ:
             train_feat = self._build_seq(train_feat)
-
         self.train_feat = train_feat
 
-        # Create validation and test data dictionaries in the same format as expected by the model
-        self.valid_data = {}
-        grouped_valid = valid_data.groupby('user_id')
-        for uid, group in grouped_valid:
-            self.valid_data[uid] = group['item_id'].values.tolist()
-
-        self.test_data = {}
-        grouped_test = test_data.groupby('user_id')
-        for uid, group in grouped_test:
-            self.test_data[uid] = group['item_id'].values.tolist()
-        self.logger.info(f"Pre-split data loading completed. Train sequences: {len(self.user_seq)}, Valid users: {len(self.valid_data)}, Test users: {len(self.test_data)}")
+        # valid/test dicts by user
+        self.valid_data = {uid: grp['item_id'].tolist() for uid, grp in valid_data.groupby('user_id')}
+        self.test_data  = {uid: grp['item_id'].tolist() for uid, grp in test_data.groupby('user_id')}
+        self.logger.info(f"Pre-split done. Train sequences: {len(self.user_seq)}, Valid users: {len(self.valid_data)}, Test users: {len(self.test_data)}")
 
     def build(self, use_pre_split):
         if use_pre_split:
