@@ -77,7 +77,7 @@ def run_loop(local_rank, config_file=None, saved=True, extra_args=[]):
     init_logger(config)
     logger = getLogger()
     if 'text_path' in config:
-        config['text_path'] = os.path.join(config['text_path'], config['dataset'] + '.csv')
+        config['text_path'] = os.path.join(config['text_path'], config['dataset'] + '/item')
         logger.info(f"Update text_path to {config['text_path']}")
 
     # get model and data

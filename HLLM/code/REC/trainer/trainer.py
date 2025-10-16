@@ -188,6 +188,31 @@ class Trainer(object):
             start_time = bwd_time
             self.optimizer.zero_grad()
             data = self.to_device(data)
+
+            # # CHECK CORRECTNESS: log batch keys/shapes and a sample of sequence and target for the first batch (rank 0)
+            # if batch_idx == 0 and self.rank == 0:
+            #     try:
+            #         sample_keys = list(data.keys()) if isinstance(data, dict) else []
+            #         sample_shapes = {k: (v.shape if hasattr(v, 'shape') else str(type(v))) for k, v in data.items()} if isinstance(data, dict) else {}
+            #         self.logger.info(f"CHECK CORRECTNESS TRAIN batch_idx=0 keys={sample_keys} shapes={sample_shapes}")
+            #         if 'pos_item_ids' in data and 'attention_mask' in data:
+            #             self.logger.info(f"CHECK CORRECTNESS TRAIN sample pos_item_ids[:1]={data['pos_item_ids'][:1]} attention_mask[:1]={data['attention_mask'][:1]}")
+
+            #         # CHECK CORRECTNESS: log user ids if present in batch dict (safe, guarded)
+            #         for ukey in ('user', 'user_id', 'users'):
+            #             if isinstance(data, dict) and ukey in data:
+            #                 try:
+            #                     u_sample = data[ukey][:16].cpu().tolist()
+            #                 except Exception:
+            #                     try:
+            #                         u_sample = data[ukey][:16].tolist()
+            #                     except Exception:
+            #                         u_sample = str(data[ukey][:16])
+            #                 self.logger.info(f"CHECK CORRECTNESS TRAIN user_key={ukey} user_sample={u_sample}")
+            #                 break
+            #     except Exception:
+            #         self.logger.exception('CHECK CORRECTNESS TRAIN logging failed')
+
             data_time = t.time()
             losses = self.model(data)
             fwd_time = t.time()
@@ -401,8 +426,28 @@ class Trainer(object):
     @torch.no_grad()
     def _full_sort_batch_eval(self, batched_data):
         user, time_seq, history_index, positive_u, positive_i = batched_data
+
+        # CHECK CORRECTNESS: log raw user ids from the batch (before moving to device)
+        if self.rank == 0:
+            try:
+                try:
+                    u_sample = user[:16].cpu().tolist()
+                except Exception:
+                    u_sample = user[:16].tolist() if hasattr(user, 'tolist') else str(user[:16])
+                self.logger.info(f"CHECK CORRECTNESS EVAL user_sample={u_sample}")
+            except Exception:
+                self.logger.exception('CHECK CORRECTNESS EVAL user logging failed')
+
         interaction = self.to_device(user)
         time_seq = self.to_device(time_seq)
+
+        # CHECK CORRECTNESS: log eval/predict inputs and a sample of positive indices (rank 0 only)
+        if self.rank == 0:
+            try:
+                self.logger.info(f"CHECK CORRECTNESS EVAL user.shape={getattr(user, 'shape', None)} time_seq.shape={getattr(time_seq, 'shape', None)} positive_i_sample={positive_i[:16]} positive_u_sample={positive_u[:16]}")
+            except Exception:
+                self.logger.exception('CHECK CORRECTNESS EVAL logging failed')
+
         if self.config['model'] == 'HLLM':
             if self.config['stage'] == 3:
                 scores = self.model.module.predict(interaction, time_seq, self.item_feature)
@@ -557,6 +602,8 @@ class Trainer(object):
 
             num_total_examples = len(eval_data.sampler.dataset)
             struct = self.eval_collector.get_data_struct()
+            struct.set('data.num_users', num_total_examples)
+            struct.set('data.num_items', self.tot_item_num)
             result = self.evaluator.evaluate(struct)
 
             metric_decimal_place = 5 if self.config['metric_decimal_place'] == None else self.config['metric_decimal_place']
