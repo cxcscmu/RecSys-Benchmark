@@ -5,7 +5,7 @@ hidden_size: 100
 dropout_prob: 0.25
 loss_type: CE
 train_neg_sample_args: null
-epochs: 100
+epochs: 100  # Use 20 for amzn-books
 train_batch_size: 512
 eval_batch_size: 256
 learning_rate: 0.001
